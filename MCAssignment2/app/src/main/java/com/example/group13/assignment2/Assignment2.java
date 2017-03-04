@@ -1,6 +1,7 @@
 package com.example.group13.assignment2;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -13,31 +14,43 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+import java.util.*;
+
+import static android.hardware.SensorManager.GRAVITY_EARTH;
 
 public class Assignment2 extends AppCompatActivity implements SensorEventListener{
     GraphView g;
     LinearLayout graph;
+    List<Float> alValuesX,alValuesY,alValuesZ;
     float[] values;
     float[] valuesy;
     float[] valuesz;
     Thread movingGraph = null;
     Boolean flag = null;
 
-    private SensorManager sensorManager;
-    private Sensor sensorAccelerometer;
+    private SensorManager mSensorManager;
+    private Sensor mSensorAccelerometer;
 
     Handler threadHandle = new Handler(){
         @Override
         public void handleMessage(Message msg){
-            for (int i = 0; i < 9; i++) {
-                values[i] = values[i+1];
-                valuesy[i] = valuesy[i+1];
-                valuesz[i] = valuesz[i+1];
-            }
 
-            values[9]= (float)Math.ceil(Math.random()*180);
-            valuesy[9]= (float)Math.ceil(Math.random()*180);
-            valuesz[9]= (float)Math.ceil(Math.random()*180);
+            for (int i = 0; alValuesX.size()>0 && i < 9; i++)
+            {
+                values[i] = alValuesX.remove(0);
+                valuesy[i] = alValuesY.remove(0);
+                valuesz[i] = alValuesZ.remove(0);
+
+            }
+//            for (int i = 0; i < 9; i++) {
+//                values[i] = values[i+1];
+//                valuesy[i] = valuesy[i+1];
+//                valuesz[i] = valuesz[i+1];
+//            }
+//
+//            values[9]= (float)Math.ceil(Math.random()*180);
+//            valuesy[9]= (float)Math.ceil(Math.random()*180);
+//            valuesz[9]= (float)Math.ceil(Math.random()*180);
             g.invalidate();
             g.setValues(values, valuesy, valuesz);
         }
@@ -49,8 +62,8 @@ public class Assignment2 extends AppCompatActivity implements SensorEventListene
         setContentView(R.layout.activity_assignment2);
 
         init();
-        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        sensorAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        mSensorAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
 
         Button buttonRun= (Button)findViewById(R.id.buttonRun);
@@ -96,9 +109,8 @@ public class Assignment2 extends AppCompatActivity implements SensorEventListene
             vlabels[i]=String.valueOf((i * 10) + k);
         }
 
-        values= new float[10];
-        valuesy= new float[10];
-        valuesz= new float[10];
+        values= new float[10];valuesy= new float[10];valuesz= new float[10];
+        alValuesX = new LinkedList<Float>();alValuesY = new LinkedList<Float>();alValuesZ = new LinkedList<Float>();
         g = new GraphView(Assignment2.this, values, valuesy, valuesz, "Main Graph", vlabels, hlabels, GraphView.LINE);
         graph= (LinearLayout)findViewById(R.id.graphll);
         graph.addView(g);
@@ -127,17 +139,39 @@ public class Assignment2 extends AppCompatActivity implements SensorEventListene
 
 
     @Override
-    public void onSensorChanged(SensorEvent event) {
-        Sensor temp = event.sensor;
-        if (temp.getType() == Sensor.TYPE_ACCELEROMETER) {
-            float x = event.values[0];
-            float y = event.values[1];
-            float z = event.values[2];
+    public void onSensorChanged(SensorEvent sensorEvent) {
+        Sensor mySensor = sensorEvent.sensor;
+        if (mySensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            getAccelerometer(sensorEvent);
         }
+    }
+
+    private void getAccelerometer(SensorEvent event)
+    {
+        float[] values = event.values;
+        float x = values[0];
+        float y = values[1];
+        float z = values[2];
+        alValuesX.add(x);
+        alValuesY.add(y);
+        alValuesZ.add(z);
+
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
+    }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+        mSensorManager.unregisterListener(this);
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mSensorManager.registerListener(this, mSensorAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
     }
 }
