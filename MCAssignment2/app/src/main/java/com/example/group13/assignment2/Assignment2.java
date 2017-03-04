@@ -22,10 +22,9 @@ import static android.hardware.SensorManager.GRAVITY_EARTH;
 public class Assignment2 extends AppCompatActivity implements SensorEventListener{
     GraphView g;
     LinearLayout graph;
-    List<Float> alValuesX,alValuesY,alValuesZ;
-    float[] values;
-    float[] valuesy;
-    float[] valuesz;
+    List<Float> alValuesX, alValuesY, alValuesZ;
+    float[] values, valuesy, valuesz;
+    int valueArraySize = 50;
     Thread movingGraph = null;
     Boolean flag = null;
 
@@ -35,14 +34,15 @@ public class Assignment2 extends AppCompatActivity implements SensorEventListene
     Handler threadHandle = new Handler(){
         @Override
         public void handleMessage(Message msg){
-
-            for (int i = 0; alValuesX.size()>0 && i < 9; i++)
+            Log.d("threadHandlerCalled", "collectionSizeBefore - "+Integer.toString(alValuesX.size()));
+            for (int i = 0; alValuesX.size()>0 && i < valueArraySize; i++)
             {
                 values[i] = alValuesX.remove(0);
                 valuesy[i] = alValuesY.remove(0);
                 valuesz[i] = alValuesZ.remove(0);
 
             }
+            Log.d("threadHandlerCalled", "collectionSizeAfter - "+Integer.toString(alValuesX.size()));
 //            for (int i = 0; i < 9; i++) {
 //                values[i] = values[i+1];
 //                valuesy[i] = valuesy[i+1];
@@ -86,16 +86,16 @@ public class Assignment2 extends AppCompatActivity implements SensorEventListene
             public void onClick(View v) {
                 flag = false;
                 Toast.makeText(Assignment2.this, "Graph Stopped", Toast.LENGTH_SHORT).show();
-//                for (int i = 0; i < 20; i++) {
-//                    values[i] = 0;
-//                    valuesy[i] = 0;
-//                    valuesz[i] = 0;
-//                }
-                for (int i = 0; i < 10; i++) {
+                for (int i = 0; i < valueArraySize; i++) {
                     values[i] = 0;
                     valuesy[i] = 0;
                     valuesz[i] = 0;
                 }
+//                for (int i = 0; i < 10; i++) {
+//                    values[i] = 0;
+//                    valuesy[i] = 0;
+//                    valuesz[i] = 0;
+//                }
                 g.invalidate();
                 g.setValues(values, valuesy, valuesz);
             }
@@ -115,8 +115,8 @@ public class Assignment2 extends AppCompatActivity implements SensorEventListene
             vlabels[i]=String.valueOf((i * 10) + k);
         }
 
-        values= new float[10];valuesy= new float[10];valuesz= new float[10];
-//        values= new float[20];valuesy= new float[20];valuesz= new float[20];
+//        values= new float[10];valuesy= new float[10];valuesz= new float[10];
+        values= new float[valueArraySize];valuesy= new float[valueArraySize];valuesz= new float[valueArraySize];
         alValuesX = new LinkedList<Float>();alValuesY = new LinkedList<Float>();alValuesZ = new LinkedList<Float>();
         g = new GraphView(Assignment2.this, values, valuesy, valuesz, "Main Graph", vlabels, hlabels, GraphView.LINE);
         graph= (LinearLayout)findViewById(R.id.graphll);
@@ -159,7 +159,7 @@ public class Assignment2 extends AppCompatActivity implements SensorEventListene
         float x = values[0];
         float y = values[1];
         float z = values[2];
-        Log.d("sensorChanged", "X - "+ Float.toString(x) + " | Y - "+ Float.toString(y) + " | Z - "+ Float.toString(z));
+//        Log.d("sensorChanged", "X - "+ Float.toString(x) + " | Y - "+ Float.toString(y) + " | Z - "+ Float.toString(z));
         alValuesX.add(x);
         alValuesY.add(y);
         alValuesZ.add(z);
