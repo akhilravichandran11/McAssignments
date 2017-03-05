@@ -74,8 +74,10 @@ public class GraphView extends View {
         float horstart = border * 2;
         float height = getHeight();
         float width = getWidth() - 1;
-        float max = getMax();
-        float min = getMin();
+//        float max = getMax();
+        float max = 15;
+//        float min = getMin();
+        float min = -15;
         float diff = max - min;
         float graphheight = height - (2 * border);
         float graphwidth = width - (2 * border);

@@ -12,9 +12,7 @@ import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.Toast;
+import android.widget.*;
 import java.util.*;
 
 import static android.hardware.SensorManager.GRAVITY_EARTH;
@@ -24,34 +22,41 @@ public class Assignment2 extends AppCompatActivity implements SensorEventListene
     LinearLayout graph;
     List<Float> alValuesX, alValuesY, alValuesZ;
     float[] values, valuesy, valuesz;
-    int valueArraySize = 50;
+    int valueArraySize = 10;
     Thread movingGraph = null;
+    int threadSleepTime = 1000;
     Boolean flag = null;
 
     private SensorManager mSensorManager;
     private Sensor mSensorAccelerometer;
+    int accelerometerSamplingRate = 1000000;
+
+    EditText widgetPatientName;
+    EditText widgetPatientID;
+    EditText widgetPatientAge;
+    RadioGroup widgetPatientSex;
+    String patientNameText;
+    String patientIDText;
+    String patientAgeText;
+    String patientSexText;
 
     Handler threadHandle = new Handler(){
         @Override
         public void handleMessage(Message msg){
             Log.d("threadHandlerCalled", "collectionSizeBefore - "+Integer.toString(alValuesX.size()));
-            for (int i = 0; alValuesX.size()>0 && i < valueArraySize; i++)
-            {
-                values[i] = alValuesX.remove(0);
-                valuesy[i] = alValuesY.remove(0);
-                valuesz[i] = alValuesZ.remove(0);
 
+            for (int i = 0; i < 9; i++) {
+                values[i] = values[i+1];
+                valuesy[i] = valuesy[i+1];
+                valuesz[i] = valuesz[i+1];
             }
+            int collectionSize = alValuesX.size();
+            values[9]= alValuesX.remove(collectionSize-1);
+            valuesy[9]= alValuesY.remove(collectionSize-1);
+            valuesz[9]= alValuesZ.remove(collectionSize-1);
+            
+            alValuesX.clear();alValuesY.clear();alValuesZ.clear();
             Log.d("threadHandlerCalled", "collectionSizeAfter - "+Integer.toString(alValuesX.size()));
-//            for (int i = 0; i < 9; i++) {
-//                values[i] = values[i+1];
-//                valuesy[i] = valuesy[i+1];
-//                valuesz[i] = valuesz[i+1];
-//            }
-//
-//            values[9]= (float)Math.ceil(Math.random()*180);
-//            valuesy[9]= (float)Math.ceil(Math.random()*180);
-//            valuesz[9]= (float)Math.ceil(Math.random()*180);
             g.invalidate();
             g.setValues(values, valuesy, valuesz);
         }
@@ -63,8 +68,14 @@ public class Assignment2 extends AppCompatActivity implements SensorEventListene
         setContentView(R.layout.activity_assignment2);
 
         init();
-        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mSensorAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        mSensorManager.registerListener(this, mSensorAccelerometer, accelerometerSamplingRate);
+
+        widgetPatientName = (EditText) findViewById(R.id.PNameText);
+        widgetPatientAge = (EditText) findViewById(R.id.PAgeText);
+        widgetPatientID = (EditText) findViewById(R.id.PIDText);
+//        widgetPatientSex = (RadioGroup) findViewById(R.id.rBMale);
 
 
         Button buttonRun= (Button)findViewById(R.id.buttonRun);
@@ -72,6 +83,8 @@ public class Assignment2 extends AppCompatActivity implements SensorEventListene
             public void onClick(View v) {
                 if(flag == null){
                     flag = true;
+
+
                     movingGraph.start();
                     Toast.makeText(Assignment2.this, "Graph Started", Toast.LENGTH_SHORT).show();
                 } else if(!flag){
@@ -105,14 +118,16 @@ public class Assignment2 extends AppCompatActivity implements SensorEventListene
     protected void init(){
         String[] hlabels= new String[10];
         for (int i = 0; i < 10; i++) {
-            hlabels[i]=String.valueOf(i * 18);
+//            hlabels[i]=String.valueOf(i * 18);
+            hlabels[i]=String.valueOf(i);
         }
 
         int k = 0;
 
         String[] vlabels= new String[10];
         for (int i = 0; i < 10; i++){
-            vlabels[i]=String.valueOf((i * 10) + k);
+//            vlabels[i]=String.valueOf((i * 10) + k);
+            vlabels[i]=String.valueOf((i) + k);
         }
 
 //        values= new float[10];valuesy= new float[10];valuesz= new float[10];
@@ -132,7 +147,7 @@ public class Assignment2 extends AppCompatActivity implements SensorEventListene
                             k++;
                             Message msg = threadHandle.obtainMessage(1,Integer.toString(k));
                             threadHandle.sendMessage(msg);
-                            Thread.sleep(250);
+                            Thread.sleep(threadSleepTime);
                         }
                     }
 
@@ -159,7 +174,7 @@ public class Assignment2 extends AppCompatActivity implements SensorEventListene
         float x = values[0];
         float y = values[1];
         float z = values[2];
-//        Log.d("sensorChanged", "X - "+ Float.toString(x) + " | Y - "+ Float.toString(y) + " | Z - "+ Float.toString(z));
+        Log.d("sensorChanged", "X - "+ Float.toString(x) + " | Y - "+ Float.toString(y) + " | Z - "+ Float.toString(z));
         alValuesX.add(x);
         alValuesY.add(y);
         alValuesZ.add(z);
@@ -171,15 +186,15 @@ public class Assignment2 extends AppCompatActivity implements SensorEventListene
 
     }
 
-    @Override
-    protected void onPause()
-    {
-        super.onPause();
-        mSensorManager.unregisterListener(this);
-    }
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mSensorManager.registerListener(this, mSensorAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-    }
+//    @Override
+//    protected void onPause()
+//    {
+//        super.onPause();
+//        mSensorManager.unregisterListener(this);
+//    }
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//        mSensorManager.registerListener(this, mSensorAccelerometer, 1000000);
+//    }
 }
