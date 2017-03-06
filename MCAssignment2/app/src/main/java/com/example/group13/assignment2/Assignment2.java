@@ -120,12 +120,22 @@ public class Assignment2 extends AppCompatActivity{
         buttonRun.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //start
+                if (widgetPatientName.getText().toString().matches("") || widgetPatientAge.getText().toString().matches("") || widgetPatientID.getText().toString().matches(""))    {
+                    Toast.makeText(Assignment2.this, "Please complete all fields!", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
                 if(flag == null){
                     flag = true;
 
+                    PatientInfo patientInfo = new PatientInfo(widgetPatientName.getText().toString(), widgetPatientAge.getText().toString(), widgetPatientID.getText().toString(), true);
+                    TABLE = patientInfo.table_name;
+                    TABLE = TABLE.replace(" ", "_");
+                    Toast.makeText(Assignment2.this, "DB Name: " + TABLE, Toast.LENGTH_SHORT).show();
+
                     try {
 
-                        db.execSQL("create table " + TABLE + " ("
+                        db.execSQL("create table if not exists " + TABLE + " ("
                                 + " created_at DATETIME DEFAULT CURRENT_TIMESTAMP, "
                                 + " x float, "
                                 + " y float,"

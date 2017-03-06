@@ -6,8 +6,8 @@ package com.example.group13.assignment2;
 
 public class PatientInfo {
 
-    public int P_ID;
-    public int P_Age;
+    public String P_ID;
+    public String P_Age;
     public String P_Name;
     public boolean P_Male;
     public String table_name;
@@ -17,7 +17,7 @@ public class PatientInfo {
     public float y_value;
     public float z_value;
 
-    public PatientInfo(String P_Name, int P_ID, int P_Age, boolean P_Male){
+    public PatientInfo(String P_Name, String P_ID, String P_Age, boolean P_Male){
         sb=new StringBuilder();
         sb.append(P_Name);
         sb.append("_");
