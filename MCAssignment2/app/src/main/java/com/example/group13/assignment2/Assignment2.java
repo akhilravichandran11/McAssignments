@@ -25,6 +25,8 @@ import android.widget.*;
 import java.io.File;
 import java.util.*;
 
+import javax.crypto.ExemptionMechanismException;
+
 
 public class Assignment2 extends AppCompatActivity{
     GraphView g;
@@ -38,6 +40,7 @@ public class Assignment2 extends AppCompatActivity{
     Thread movingGraph = null;
     int threadSleepTime = 1000;
     Boolean flag = null;
+    Boolean threadStartedFlag=false;
 
 
     EditText widgetPatientName;
@@ -125,7 +128,7 @@ public class Assignment2 extends AppCompatActivity{
                     return;
                 }
 
-                if(flag == null){
+                if(flag == null || !flag){
                     flag = true;
 
                     PatientInfo patientInfo = new PatientInfo(widgetPatientName.getText().toString(), widgetPatientAge.getText().toString(), widgetPatientID.getText().toString(), true);
@@ -143,39 +146,39 @@ public class Assignment2 extends AppCompatActivity{
                                 +
                                 " ); ");
 
-                        db.setTransactionSuccessful();
+                        try {
+                            db.setTransactionSuccessful();
+                            db.endTransaction();
+                        }catch (Exception e)    {}
                     }
                     catch (SQLiteException e) {
 
                     }
-                    finally {
-                        db.endTransaction();
-                    }
-
-
                     IntentFilter intentFilter = new IntentFilter();
                     intentFilter.addAction(AccelerometerService.ACCELEROMETER_INTENET_ACTION);
                     registerReceiver(accelerometerReceiver, intentFilter);
-                    movingGraph.start();
-                    Toast.makeText(Assignment2.this, "Graph Started", Toast.LENGTH_SHORT).show();
-                } else if(!flag){
-                    flag = true;
-                    Toast.makeText(Assignment2.this, "Graph Resumed", Toast.LENGTH_SHORT).show();
+                    if(!threadStartedFlag) {
+                        movingGraph.start();
+                        threadStartedFlag = true;
+                    }
+                    //Toast.makeText(Assignment2.this, "Graph Started", Toast.LENGTH_SHORT).show();
                 }
             }
         });
+
 
         Button buttonStop= (Button)findViewById(R.id.buttonStop);
         buttonStop.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 flag = false;
-                Toast.makeText(Assignment2.this, "Graph Stopped", Toast.LENGTH_SHORT).show();
                 for (int i = 0; i < valueArraySize; i++) {
                     values[i] = 0;valuesy[i] = 0;valuesz[i] = 0;
                 }
                 g.invalidate();
                 g.setValues(values, valuesy, valuesz);
-                unregisterReceiver(accelerometerReceiver);
+                try {
+                    unregisterReceiver(accelerometerReceiver);
+                }catch (Exception e)    {}
             }
         });
     }
