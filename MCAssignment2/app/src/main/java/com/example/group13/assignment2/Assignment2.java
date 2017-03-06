@@ -54,7 +54,7 @@ public class Assignment2 extends AppCompatActivity implements SensorEventListene
             values[9]= alValuesX.remove(collectionSize-1);
             valuesy[9]= alValuesY.remove(collectionSize-1);
             valuesz[9]= alValuesZ.remove(collectionSize-1);
-            
+
             alValuesX.clear();alValuesY.clear();alValuesZ.clear();
             Log.d("threadHandlerCalled", "collectionSizeAfter - "+Integer.toString(alValuesX.size()));
             g.invalidate();
