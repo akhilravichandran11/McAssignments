@@ -119,7 +119,7 @@ public class Assignment2 extends AppCompatActivity{
         }
 
 
-        Button buttonRun= (Button)findViewById(R.id.buttonRun);
+        final Button buttonRun= (Button)findViewById(R.id.buttonRun);
         buttonRun.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //start
@@ -167,7 +167,7 @@ public class Assignment2 extends AppCompatActivity{
         });
 
 
-        Button buttonStop= (Button)findViewById(R.id.buttonStop);
+        final Button buttonStop= (Button)findViewById(R.id.buttonStop);
         buttonStop.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 flag = false;
@@ -179,6 +179,19 @@ public class Assignment2 extends AppCompatActivity{
                 try {
                     unregisterReceiver(accelerometerReceiver);
                 }catch (Exception e)    {}
+            }
+        });
+
+        final Button buttonDownload= (Button)findViewById(R.id.buttonDownload);
+        buttonDownload.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                buttonRun.setEnabled(false);
+                buttonStop.setEnabled(false);
+                //buttonUpload.setEnabled(false);
+                buttonDownload.setEnabled(false);
+                Toast.makeText(Assignment2.this, "Download starting", Toast.LENGTH_SHORT).show();
+
+
             }
         });
     }
