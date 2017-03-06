@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -42,10 +43,12 @@ public class Assignment2 extends AppCompatActivity{
     String patientAgeText;
     String patientSexText;
 
+    SQLiteDatabase db;
+
     Handler threadHandle = new Handler(){
         @Override
         public void handleMessage(Message msg){
-            Log.d("threadHandlerCalled", "collectionSizeBefore - "+Integer.toString(alValuesX.size()));
+//            Log.d("threadHandlerCalled", "collectionSizeBefore - "+Integer.toString(alValuesX.size()));
 
             for (int i = 0; i < 9; i++) {
                 values[i] = values[i+1];valuesy[i] = valuesy[i+1];valuesz[i] = valuesz[i+1];
@@ -62,7 +65,7 @@ public class Assignment2 extends AppCompatActivity{
             }
 
             alValuesX.clear();alValuesY.clear();alValuesZ.clear();
-            Log.d("threadHandlerCalled", "collectionSizeAfter - "+Integer.toString(alValuesX.size()));
+//            Log.d("threadHandlerCalled", "collectionSizeAfter - "+Integer.toString(alValuesX.size()));
             g.invalidate();
             g.setValues(values, valuesy, valuesz);
         }
@@ -70,8 +73,13 @@ public class Assignment2 extends AppCompatActivity{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_assignment2);
+
+        Intent intent = new Intent(this, AccelerometerService.class);
+        startService(intent);
+        accelerometerReceiver = new AccelerometerReceiver();
 
         init();
 
@@ -79,11 +87,6 @@ public class Assignment2 extends AppCompatActivity{
         widgetPatientAge = (EditText) findViewById(R.id.PAgeText);
         widgetPatientID = (EditText) findViewById(R.id.PIDText);
 ///        widgetPatientSex = (RadioGroup) findViewById(R.id.rBMale);
-
-        Intent intent = new Intent(Assignment2.this, AccelerometerService.class);
-        startService(intent);
-        accelerometerReceiver = new AccelerometerReceiver();
-
 
 
         Button buttonRun= (Button)findViewById(R.id.buttonRun);

@@ -9,6 +9,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.IBinder;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -32,7 +33,8 @@ public class AccelerometerService extends Service implements SensorEventListener
     public void onCreate(){
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mSensorAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        mSensorManager.registerListener(this, mSensorAccelerometer, accelerometerSamplingRate);
+        mSensorManager.registerListener(this, mSensorAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        lastSaved = System.currentTimeMillis();
         Log.d("accelerometerService", "Created");
     }
 
@@ -45,9 +47,9 @@ public class AccelerometerService extends Service implements SensorEventListener
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         Sensor mySensor = sensorEvent.sensor;
-        lastSaved = System.currentTimeMillis();
         if (mySensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             if(System.currentTimeMillis() - lastSaved > timeDelay) {
+
                 lastSaved = System.currentTimeMillis();
                 getAccelerometer(sensorEvent, lastSaved);
             }
@@ -58,9 +60,7 @@ public class AccelerometerService extends Service implements SensorEventListener
     public int onStartCommand(Intent intent, int flags, int startId) {
         // TODO Auto-generated method stub
 
-
-
-        return super.onStartCommand(intent, flags, startId);
+        return START_STICKY;
     }
 
     private void getAccelerometer(SensorEvent event, long lastSaved)
