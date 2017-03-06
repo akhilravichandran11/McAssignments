@@ -42,15 +42,16 @@ public class Assignment2 extends AppCompatActivity{
     Boolean flag = null;
     Boolean threadStartedFlag=false;
 
-
+    Button buttonRun;
+    Button buttonStop;
+    Button buttonUpload;
+    Button buttonDownload;
     EditText widgetPatientName;
     EditText widgetPatientID;
     EditText widgetPatientAge;
     RadioGroup widgetPatientSex;
-    String patientNameText;
-    String patientIDText;
-    String patientAgeText;
-    String patientSexText;
+
+    PatientInfo patientInfo;
 
     SQLiteDatabase db;
     public String TABLE = "dude"+System.currentTimeMillis();
@@ -101,7 +102,11 @@ public class Assignment2 extends AppCompatActivity{
         }
 
 
-        final Button buttonRun= (Button)findViewById(R.id.buttonRun);
+        buttonRun= (Button)findViewById(R.id.buttonRun);
+        buttonStop= (Button)findViewById(R.id.buttonStop);
+        buttonDownload= (Button)findViewById(R.id.buttonDownload);
+        buttonUpload= (Button)findViewById(R.id.buttonUpload);
+
         buttonRun.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //start
@@ -113,7 +118,7 @@ public class Assignment2 extends AppCompatActivity{
                 if(flag == null || !flag){
                     flag = true;
 
-                    PatientInfo patientInfo = new PatientInfo(widgetPatientName.getText().toString(), widgetPatientAge.getText().toString(), widgetPatientID.getText().toString(), true);
+                    patientInfo = new PatientInfo(widgetPatientName.getText().toString(), widgetPatientAge.getText().toString(), widgetPatientID.getText().toString(), true);
                     TABLE = patientInfo.table_name;
                     TABLE = TABLE.replace(" ", "_");
                     Toast.makeText(Assignment2.this, "DB Name: " + TABLE, Toast.LENGTH_SHORT).show();
@@ -149,7 +154,7 @@ public class Assignment2 extends AppCompatActivity{
         });
 
 
-        final Button buttonStop= (Button)findViewById(R.id.buttonStop);
+
         buttonStop.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 flag = false;
@@ -164,12 +169,12 @@ public class Assignment2 extends AppCompatActivity{
             }
         });
 
-        final Button buttonDownload= (Button)findViewById(R.id.buttonDownload);
+
         buttonDownload.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 buttonRun.setEnabled(false);
                 buttonStop.setEnabled(false);
-                //buttonUpload.setEnabled(false);
+                buttonUpload.setEnabled(false);
                 buttonDownload.setEnabled(false);
                 Toast.makeText(Assignment2.this, "Download starting", Toast.LENGTH_SHORT).show();
 
@@ -177,15 +182,35 @@ public class Assignment2 extends AppCompatActivity{
             }
         });
 
-        Button buttonUpload= (Button)findViewById(R.id.buttonUpload);
+
         buttonUpload.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                
-                Toast.makeText(Assignment2.this, "Upload Begins", Toast.LENGTH_SHORT).show();
+
+                try{
+
+                    if (widgetPatientName.getText().toString().matches("") || widgetPatientAge.getText().toString().matches("") || widgetPatientID.getText().toString().matches(""))    {
+                        Toast.makeText(Assignment2.this, "Please complete all fields!", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+
+                    disableAllButtons();
+                    Toast.makeText(Assignment2.this, "Upload Begins", Toast.LENGTH_SHORT).show();
 
 
 
-                Toast.makeText(Assignment2.this, "Upload Ends", Toast.LENGTH_SHORT).show();
+
+                    Toast.makeText(Assignment2.this, "Upload Ends", Toast.LENGTH_SHORT).show();
+
+                }catch(Exception exp)
+                {
+                    Toast.makeText(Assignment2.this, "Exception" + exp.getMessage() , Toast.LENGTH_LONG).show();
+                    Log.d("Exception",exp.getMessage() );
+                }finally{
+                    enableAllButtons();
+                }
+
+
+
 
             }
         });
@@ -274,6 +299,28 @@ public class Assignment2 extends AppCompatActivity{
         }
     }
 
+    private void disableAllButtons()
+    {
+        disableOrEnableButtons(false,false,false,false);
+    }
+
+    private void enableAllButtons()
+    {
+        disableOrEnableButtons(true,true,true,true);
+    }
+
+    private void disableOrEnableButtons(boolean run,boolean stop,boolean upload,boolean download)
+    {
+        buttonRun.setEnabled(run);
+        buttonStop.setEnabled(stop);
+        buttonUpload.setEnabled(upload);
+        buttonDownload.setEnabled(download);
+    }
+
+    private void uploadDatabaseData()
+    {
+        
+    }
 
 
 }
