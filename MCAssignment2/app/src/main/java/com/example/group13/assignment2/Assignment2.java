@@ -26,10 +26,10 @@ public class Assignment2 extends AppCompatActivity implements SensorEventListene
     Thread movingGraph = null;
     int threadSleepTime = 1000;
     Boolean flag = null;
-
-    private SensorManager mSensorManager;
-    private Sensor mSensorAccelerometer;
-    int accelerometerSamplingRate = 1000000;
+//
+//    private SensorManager mSensorManager;
+//    private Sensor mSensorAccelerometer;
+//    int accelerometerSamplingRate = 1000000;
 
     EditText widgetPatientName;
     EditText widgetPatientID;
@@ -51,10 +51,21 @@ public class Assignment2 extends AppCompatActivity implements SensorEventListene
                 valuesz[i] = valuesz[i+1];
             }
             int collectionSize = alValuesX.size();
-            values[9]= alValuesX.remove(collectionSize-1);
-            valuesy[9]= alValuesY.remove(collectionSize-1);
-            valuesz[9]= alValuesZ.remove(collectionSize-1);
+            if(collectionSize>0)
+            {
+                values[9]= alValuesX.remove(collectionSize-1);
+                valuesy[9]= alValuesY.remove(collectionSize-1);
+                valuesz[9]= alValuesZ.remove(collectionSize-1);
 
+            }
+            else
+            {
+                values[9] = values[8];
+                valuesy[9] = valuesy[8];
+                valuesz[9] = valuesz[8];
+            }
+
+            
             alValuesX.clear();alValuesY.clear();alValuesZ.clear();
             Log.d("threadHandlerCalled", "collectionSizeAfter - "+Integer.toString(alValuesX.size()));
             g.invalidate();
@@ -68,9 +79,9 @@ public class Assignment2 extends AppCompatActivity implements SensorEventListene
         setContentView(R.layout.activity_assignment2);
 
         init();
-        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        mSensorAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        mSensorManager.registerListener(this, mSensorAccelerometer, accelerometerSamplingRate);
+//        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+//        mSensorAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+//        mSensorManager.registerListener(this, mSensorAccelerometer, accelerometerSamplingRate);
 
         widgetPatientName = (EditText) findViewById(R.id.PNameText);
         widgetPatientAge = (EditText) findViewById(R.id.PAgeText);
@@ -81,6 +92,8 @@ public class Assignment2 extends AppCompatActivity implements SensorEventListene
         Button buttonRun= (Button)findViewById(R.id.buttonRun);
         buttonRun.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                //start
+
                 if(flag == null){
                     flag = true;
 
@@ -130,7 +143,7 @@ public class Assignment2 extends AppCompatActivity implements SensorEventListene
             vlabels[i]=String.valueOf((i) + k);
         }
 
-//        values= new float[10];valuesy= new float[10];valuesz= new float[10];
+//      values= new float[10];valuesy= new float[10];valuesz= new float[10];
         values= new float[valueArraySize];valuesy= new float[valueArraySize];valuesz= new float[valueArraySize];
         alValuesX = new LinkedList<Float>();alValuesY = new LinkedList<Float>();alValuesZ = new LinkedList<Float>();
         g = new GraphView(Assignment2.this, values, valuesy, valuesz, "Main Graph", vlabels, hlabels, GraphView.LINE);
