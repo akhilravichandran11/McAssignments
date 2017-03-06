@@ -61,24 +61,6 @@ public class Assignment2 extends AppCompatActivity{
     Handler threadHandle = new Handler(){
         @Override
         public void handleMessage(Message msg){
-//            Log.d("threadHandlerCalled", "collectionSizeBefore - "+Integer.toString(alValuesX.size()));
-
-//            for (int i = 0; i < 9; i++) {
-//                values[i] = values[i+1];valuesy[i] = valuesy[i+1];valuesz[i] = valuesz[i+1];
-//            }
-//            int collectionSize = alValuesX.size();
-//            if(collectionSize>0)
-//            {
-//                values[9]= alValuesX.remove(collectionSize-1);valuesy[9]= alValuesY.remove(collectionSize-1);valuesz[9]= alValuesZ.remove(collectionSize-1);
-//
-//            }
-//            else
-//            {
-//                values[9] = values[8];valuesy[9] = valuesy[8];valuesz[9] = valuesz[8];
-//            }
-//
-//            alValuesX.clear();alValuesY.clear();alValuesZ.clear();
-//            Log.d("threadHandlerCalled", "collectionSizeAfter - "+Integer.toString(alValuesX.size()));
             getDataFromDatabase();
             g.invalidate();
             g.setValues(values, valuesy, valuesz);
@@ -194,6 +176,19 @@ public class Assignment2 extends AppCompatActivity{
 
             }
         });
+
+        Button buttonUpload= (Button)findViewById(R.id.buttonUpload);
+        buttonUpload.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                
+                Toast.makeText(Assignment2.this, "Upload Begins", Toast.LENGTH_SHORT).show();
+
+
+
+                Toast.makeText(Assignment2.this, "Upload Ends", Toast.LENGTH_SHORT).show();
+
+            }
+        });
     }
 
     protected void init(){
@@ -208,7 +203,7 @@ public class Assignment2 extends AppCompatActivity{
         }
         
         values= new float[valueArraySize];valuesy= new float[valueArraySize];valuesz= new float[valueArraySize];
-        alValuesX = new LinkedList<Float>();alValuesY = new LinkedList<Float>();alValuesZ = new LinkedList<Float>();
+//        alValuesX = new LinkedList<Float>();alValuesY = new LinkedList<Float>();alValuesZ = new LinkedList<Float>();
         g = new GraphView(Assignment2.this, values, valuesy, valuesz, "Main Graph", vlabels, hlabels, GraphView.LINE);
         graph= (LinearLayout)findViewById(R.id.graphll);
         graph.addView(g);
@@ -242,13 +237,6 @@ public class Assignment2 extends AppCompatActivity{
             float x = intent.getFloatExtra("X", 0.0f);
             float y = intent.getFloatExtra("Y", 0.0f);
             float z = intent.getFloatExtra("Z", 0.0f);
-//            float x = 1;
-//            float y = 2;
-//            float z = 3;
-            alValuesX.add(x);
-            alValuesY.add(y);
-            alValuesZ.add(z);
-
             try {
 
                 db.execSQL("insert into " + TABLE + " (x,y,z) values ('" + x + "', '" + y + "','" + z + "' );");
