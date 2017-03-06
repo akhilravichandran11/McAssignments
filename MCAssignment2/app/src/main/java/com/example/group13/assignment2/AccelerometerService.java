@@ -26,13 +26,14 @@ public class AccelerometerService extends Service implements SensorEventListener
     float z_value;
     public static int timeDelay = 1000;
     public long lastSaved;
-    PatientInfo patientInfo;
+    final static String ACCELEROMETER_INTENET_ACTION = "PUSH_ACCELEROMETER_DATA";
 
     @Override
     public void onCreate(){
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mSensorAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mSensorManager.registerListener(this, mSensorAccelerometer, accelerometerSamplingRate);
+        Log.d("accelerometerService", "Created");
     }
 
     @Nullable
@@ -41,7 +42,7 @@ public class AccelerometerService extends Service implements SensorEventListener
         return null;
     }
 
-
+    @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         Sensor mySensor = sensorEvent.sensor;
         lastSaved = System.currentTimeMillis();
@@ -53,18 +54,32 @@ public class AccelerometerService extends Service implements SensorEventListener
         }
     }
 
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        // TODO Auto-generated method stub
+
+
+
+        return super.onStartCommand(intent, flags, startId);
+    }
+
     private void getAccelerometer(SensorEvent event, long lastSaved)
     {
         float[] values = event.values;
-        float x = values[0];
-        float y = values[1];
-        float z = values[2];
-        Log.d("sensorChanged", "X - "+ Float.toString(x) + " | Y - "+ Float.toString(y) + " | Z - "+ Float.toString(z));
-        x_value=x;
-        y_value=y;
-        z_value=z;
+        x_value = values[0];
+        y_value = values[1];
+        z_value = values[2];
 
-        patientInfo.set_value(lastSaved, x_value, y_value, z_value);
+        Intent intent = new Intent();
+        intent.setAction(ACCELEROMETER_INTENET_ACTION );
+
+        intent.putExtra("X", x_value);
+        intent.putExtra("Y", y_value);
+        intent.putExtra("Z", z_value);
+
+        sendBroadcast(intent);
+
+        Log.d("sensorChanged", "X - "+ Float.toString(x_value) + " | Y - "+ Float.toString(y_value) + " | Z - "+ Float.toString(z_value));
 
     }
 
