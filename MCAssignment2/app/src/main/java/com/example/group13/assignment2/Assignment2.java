@@ -71,6 +71,7 @@ public class Assignment2 extends AppCompatActivity{
     RadioGroup widgetPatientSex;
 
     PatientInfo patientInfo;
+    boolean P_Male = true;
 
     SQLiteDatabase db;
     public String TABLE = "dude"+System.currentTimeMillis();
@@ -89,12 +90,8 @@ public class Assignment2 extends AppCompatActivity{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_assignment2);
-        Log.d("dude",FILE_PATH );
         Intent intent = new Intent(this, AccelerometerService.class);
         startService(intent);
         accelerometerReceiver = new AccelerometerReceiver();
@@ -104,7 +101,8 @@ public class Assignment2 extends AppCompatActivity{
         widgetPatientName = (EditText) findViewById(R.id.PNameText);
         widgetPatientAge = (EditText) findViewById(R.id.PAgeText);
         widgetPatientID = (EditText) findViewById(R.id.PIDText);
-///        widgetPatientSex = (RadioGroup) findViewById(R.id.rBMale);
+        widgetPatientSex = (RadioGroup) findViewById(R.id.radioGroup);
+
 
         try{
             File folder = new File(FILE_PATH);
@@ -125,20 +123,39 @@ public class Assignment2 extends AppCompatActivity{
         buttonStop= (Button)findViewById(R.id.buttonStop);
         buttonDownload= (Button)findViewById(R.id.buttonDownload);
         buttonUpload= (Button)findViewById(R.id.buttonUpload);
+        buttonStop.setEnabled(false);
 
+        widgetPatientSex.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if(checkedId == R.id.rBFemale) {
+                    P_Male=false;
+                }
+                else {
+                    P_Male=true;
+                }
+            }
+
+        });
 
         buttonRun.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //start
                 if (widgetPatientName.getText().toString().matches("") || widgetPatientAge.getText().toString().matches("") || widgetPatientID.getText().toString().matches(""))    {
-                    Toast.makeText(Assignment2.this, "Please complete all fields!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(Assignment2.this, "Please complete all fields!", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
                 if(flag == null || !flag){
                     flag = true;
 
-                    patientInfo = new PatientInfo(widgetPatientName.getText().toString(), widgetPatientAge.getText().toString(), widgetPatientID.getText().toString(), true);
+                    //disable relevant buttons
+                    buttonRun.setEnabled(false);
+                    buttonStop.setEnabled(true);
+                    buttonUpload.setEnabled(false);
+                    buttonDownload.setEnabled(false);
+
+                    patientInfo = new PatientInfo(widgetPatientName.getText().toString(), widgetPatientAge.getText().toString(), widgetPatientID.getText().toString(), P_Male);
                     TABLE = patientInfo.table_name;
                     TABLE = TABLE.replace(" ", "_");
                     Toast.makeText(Assignment2.this, "DB Name: " + TABLE, Toast.LENGTH_SHORT).show();
@@ -181,6 +198,12 @@ public class Assignment2 extends AppCompatActivity{
                 }
                 g.invalidate();
                 g.setValues(values, valuesy, valuesz);
+                //disable relevant buttons
+                buttonRun.setEnabled(true);
+                buttonStop.setEnabled(false);
+                buttonUpload.setEnabled(true);
+                buttonDownload.setEnabled(true);
+
                 try {
                     unregisterReceiver(accelerometerReceiver);
                 }catch (Exception e)    {}
@@ -195,22 +218,6 @@ public class Assignment2 extends AppCompatActivity{
                 buttonUpload.setEnabled(false);
                 buttonDownload.setEnabled(false);
                 downloadFileFromServer1("https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Fss06hid.csv", DATABASE_LOCATION, DATABASE_NAME);
-
-//                new Thread(new Runnable() {
-//                    public void run() {
-//                        runOnUiThread(new Runnable() {
-//                            public void run() {
-//                                buttonRun.setEnabled(false);
-//                                buttonStop.setEnabled(false);
-//                                buttonUpload.setEnabled(false);
-//                                buttonDownload.setEnabled(false);
-//                                //Toast.makeText(Assignment2.this, "Download starting", Toast.LENGTH_SHORT).show();
-//                            }
-//                        });
-//                        //downloadFileFromServer("https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Fss06hid.csv", DATABASE_LOCATION, DATABASE_NAME);
-//                        downloadFileFromServer1("https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Fss06hid.csv", DATABASE_LOCATION, DATABASE_NAME);
-//                    }
-//                }).start();
             }
         });
 
@@ -231,7 +238,8 @@ public class Assignment2 extends AppCompatActivity{
     protected void init(){
         String[] hlabels= new String[10];
         for (int i = 0; i < 10; i++) {
-            hlabels[i]=String.valueOf(i);
+            int temp = (-4)*i + 18;         //to get in the range of 20 to -18
+            hlabels[i]=String.valueOf(temp);
         }
 
         String[] vlabels= new String[10];
@@ -408,12 +416,12 @@ public class Assignment2 extends AppCompatActivity{
         @Override
         protected void onPostExecute(String result) {
             if (result != null){
-                Toast.makeText(context,"Download error: "+result, Toast.LENGTH_LONG).show();
+                Toast.makeText(context,"Download error: "+result, Toast.LENGTH_SHORT).show();
             }else{
                 Toast.makeText(context,"Database downloaded", Toast.LENGTH_SHORT).show();
             }
             buttonRun.setEnabled(true);
-            buttonStop.setEnabled(true);
+            buttonStop.setEnabled(false);
             buttonDownload.setEnabled(true);
             buttonUpload.setEnabled(true);
         }
@@ -501,22 +509,8 @@ public class Assignment2 extends AppCompatActivity{
 
                     dos.writeBytes(lineEnd);
                     dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
-
-                    // Responses from the server (code and message)
                     serverResponseCode = conn.getResponseCode();
                     String serverResponseMessage = conn.getResponseMessage();
-
-//                if (serverResponseCode == 200) {
-//                    runOnUiThread(new Runnable() {
-//                        public void run() {
-//                            dispButton.setEnabled(true);
-//                            stopButton.setEnabled(false);
-//                            uploadButton.setEnabled(true);
-//                            downloadButton.setEnabled(true);
-//                            recordButton.setEnabled(true);
-//                        }
-//                    });
-//                }
 
                     fileInputStream.close();
                     dos.flush();
@@ -543,17 +537,16 @@ public class Assignment2 extends AppCompatActivity{
         @Override
         protected void onPostExecute(String result) {
             if (result != null){
-                Toast.makeText(context,"Upload error: "+result, Toast.LENGTH_LONG).show();
+                Toast.makeText(context,"Upload error: "+result, Toast.LENGTH_SHORT).show();
             }else{
                 Toast.makeText(context,"Database uploaded", Toast.LENGTH_SHORT).show();
             }
             buttonRun.setEnabled(true);
-            buttonStop.setEnabled(true);
+            buttonStop.setEnabled(false);
             buttonDownload.setEnabled(true);
             buttonUpload.setEnabled(true);
         }
     }
-
 
 
     public void downloadFileFromServer(final String source, String dest, String fileName) {

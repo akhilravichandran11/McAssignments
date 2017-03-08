@@ -116,7 +116,8 @@
                 <RadioGroup
                     android:orientation="vertical"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent" >
+                    android:layout_height="match_parent"
+                    android:id="@+id/radioGroup">
 
                     <RadioButton
                         android:text="Male"
@@ -125,7 +126,7 @@
                         android:id="@+id/rBMale"
                         android:layout_weight=".25"
                         android:textSize="11sp"
-                        android:checked="false" />
+                        android:checked="true" />
 
                     <RadioButton
                         android:text="Female"
