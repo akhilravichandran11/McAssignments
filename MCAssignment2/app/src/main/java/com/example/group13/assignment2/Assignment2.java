@@ -13,19 +13,37 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.os.PowerManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.*;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URL;
+import java.security.KeyManagementException;
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.*;
 
 import javax.crypto.ExemptionMechanismException;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 
 public class Assignment2 extends AppCompatActivity{
@@ -42,6 +60,10 @@ public class Assignment2 extends AppCompatActivity{
     Boolean flag = null;
     Boolean threadStartedFlag=false;
 
+    Button buttonRun;
+    Button buttonStop;
+    Button buttonUpload;
+    Button buttonDownload;
 
     EditText widgetPatientName;
     EditText widgetPatientID;
@@ -101,7 +123,7 @@ public class Assignment2 extends AppCompatActivity{
         }
 
 
-        final Button buttonRun= (Button)findViewById(R.id.buttonRun);
+        buttonRun= (Button)findViewById(R.id.buttonRun);
         buttonRun.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //start
@@ -149,7 +171,7 @@ public class Assignment2 extends AppCompatActivity{
         });
 
 
-        final Button buttonStop= (Button)findViewById(R.id.buttonStop);
+        buttonStop= (Button)findViewById(R.id.buttonStop);
         buttonStop.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 flag = false;
@@ -164,29 +186,45 @@ public class Assignment2 extends AppCompatActivity{
             }
         });
 
-        final Button buttonDownload= (Button)findViewById(R.id.buttonDownload);
+        buttonDownload= (Button)findViewById(R.id.buttonDownload);
+        buttonUpload= (Button)findViewById(R.id.buttonUpload);
         buttonDownload.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 buttonRun.setEnabled(false);
                 buttonStop.setEnabled(false);
-                //buttonUpload.setEnabled(false);
+                buttonUpload.setEnabled(false);
                 buttonDownload.setEnabled(false);
-                Toast.makeText(Assignment2.this, "Download starting", Toast.LENGTH_SHORT).show();
+                downloadFileFromServer1("https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Fss06hid.csv", DATABASE_LOCATION, DATABASE_NAME);
 
-
+//                new Thread(new Runnable() {
+//                    public void run() {
+//                        runOnUiThread(new Runnable() {
+//                            public void run() {
+//                                buttonRun.setEnabled(false);
+//                                buttonStop.setEnabled(false);
+//                                buttonUpload.setEnabled(false);
+//                                buttonDownload.setEnabled(false);
+//                                //Toast.makeText(Assignment2.this, "Download starting", Toast.LENGTH_SHORT).show();
+//                            }
+//                        });
+//                        //downloadFileFromServer("https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Fss06hid.csv", DATABASE_LOCATION, DATABASE_NAME);
+//                        downloadFileFromServer1("https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Fss06hid.csv", DATABASE_LOCATION, DATABASE_NAME);
+//                    }
+//                }).start();
             }
         });
 
-        Button buttonUpload= (Button)findViewById(R.id.buttonUpload);
+
         buttonUpload.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 
                 Toast.makeText(Assignment2.this, "Upload Begins", Toast.LENGTH_SHORT).show();
-
-
-
+                buttonRun.setEnabled(false);
+                buttonStop.setEnabled(false);
+                buttonUpload.setEnabled(false);
+                buttonDownload.setEnabled(false);
+                uploadFileToServer(DATABASE_LOCATION, "https://impact.asu.edu/CSE535Spring17Folder/UploadToServer.php", DATABASE_NAME);
                 Toast.makeText(Assignment2.this, "Upload Ends", Toast.LENGTH_SHORT).show();
-
             }
         });
     }
@@ -274,6 +312,257 @@ public class Assignment2 extends AppCompatActivity{
         }
     }
 
+    public void downloadFileFromServer1(final String source, String dest, String fileName) {
+        final DownloadTask downloadTask = new DownloadTask(Assignment2.this);
+        downloadTask.execute("https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Fss06hid.csv", DATABASE_LOCATION, DATABASE_NAME);
+    }
+
+    private class DownloadTask extends AsyncTask<String, Integer, String> {
+        private Context context;
+        private PowerManager.WakeLock mWakeLock;
+
+        public DownloadTask(Context context) {
+            this.context = context;
+        }
+
+        @Override
+        protected String doInBackground(String... sUrl) {
+            InputStream input = null;
+            OutputStream output = null;
+            HttpsURLConnection connection = null;
+            TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
+                public X509Certificate[] getAcceptedIssuers() {return null;}
+                @Override
+                public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {}
+                @Override
+                public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {}
+            } };
+
+            try {
+                SSLContext sc = SSLContext.getInstance("TLS");
+                sc.init(null, trustAllCerts, new java.security.SecureRandom());
+
+                HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            try {
+                URL url = new URL(sUrl[0]);
+                connection = (HttpsURLConnection) url.openConnection();
+                connection.connect();
+                if (connection.getResponseCode() != HttpsURLConnection.HTTP_OK) {
+                    return "Server returned HTTP " + connection.getResponseCode() + " " + connection.getResponseMessage();
+                }
+
+                // display download percentage or -1
+                int fileLength = connection.getContentLength();
+
+                input = connection.getInputStream();
+                output = new FileOutputStream(FILE_PATH +File.separator+"Downloaded_DB");
+                byte data[] = new byte[4096];
+                long total = 0;
+                int count;
+                while ((count = input.read(data)) != -1) {
+                    // allow canceling with back button
+                    if (isCancelled()) {
+                        input.close();
+                        return null;
+                    }
+                    total += count;
+                    // publishing the progress....
+                    if (fileLength > 0) // only if total length is known
+                        publishProgress((int) (total * 100 / fileLength));
+                    output.write(data, 0, count);
+                }
+            } catch (Exception e) {
+                return e.toString();
+            } finally {
+                try {
+                    if (output != null)
+                        output.close();
+                    if (input != null)
+                        input.close();
+                } catch (Exception e) {
+                }
+
+                if (connection != null)
+                    connection.disconnect();
+            }
+            return null;
+        }
+
+
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... progress) {
+            super.onProgressUpdate(progress);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            if (result != null){
+                Toast.makeText(context,"Download error: "+result, Toast.LENGTH_LONG).show();
+            }else{
+                Toast.makeText(context,"Database downloaded", Toast.LENGTH_SHORT).show();
+            }
+            buttonRun.setEnabled(true);
+            buttonStop.setEnabled(true);
+            buttonDownload.setEnabled(true);
+            buttonUpload.setEnabled(true);
+        }
+    }
+
+    //referred from: http://androidexample.com/Upload_File_To_Server_-_Android_Example/index.php?view=article_discription&aid=83&aaid=106
+    public int uploadFileToServer(final String sourceFileUri, String strDestinationUri, String fileName) {
+        HttpsURLConnection conn = null;
+        DataOutputStream dos = null;
+        String lineEnd = "\r\n";
+        String twoHyphens = "--";
+        String boundary = "*****";
+        int bytesRead, bytesAvailable, bufferSize;
+        byte[] buffer;
+        int maxBufferSize = 1 * 1024 * 1024;
+        File sourceFile = new File(sourceFileUri);
+        int serverResponseCode=0;
+
+        if (!sourceFile.isFile()) {
+            Log.d("D", "file to upload not found");
+        }
+        else {
+            try {
+                FileInputStream fileInputStream = new FileInputStream(sourceFile);
+                TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
+                            public X509Certificate[] getAcceptedIssuers() {return null;}
+                            public void checkClientTrusted(X509Certificate[] certs, String authType) {}
+                            public void checkServerTrusted(X509Certificate[] certs, String authType) {}
+                        }
+                };
+
+                try {
+                    SSLContext sc = SSLContext.getInstance("SSL");
+                    sc.init(null, trustAllCerts, new SecureRandom());
+                    HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+                } catch (Exception e) {
+                    Log.d("D", "SSL problem");
+                }
+                URL url = new URL(strDestinationUri);
+
+                conn = (HttpsURLConnection) url.openConnection();
+                conn.setDoInput(true);
+                conn.setDoOutput(true);
+                conn.setUseCaches(false);
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("Connection", "Keep-Alive");
+                conn.setRequestProperty("ENCTYPE", "multipart/form-data");
+                conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
+                conn.setRequestProperty("uploaded_file", fileName);
+
+                dos = new DataOutputStream(conn.getOutputStream());
+                dos.writeBytes(twoHyphens + boundary + lineEnd);
+                dos.writeBytes("Content-Disposition: form-data; name=\"uploaded_file\";filename=\"" + fileName + "\"" + lineEnd);
+                dos.writeBytes(lineEnd);
+
+
+                bytesAvailable = fileInputStream.available();
+                Log.d("D", ""+bytesAvailable);
+                bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                buffer = new byte[bufferSize];
+
+                bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+
+                while (bytesRead > 0) {
+                    dos.write(buffer, 0, bufferSize);
+                    bytesAvailable = fileInputStream.available();
+                    bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                    bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+                }
+
+                dos.writeBytes(lineEnd);
+                dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
+
+                // Responses from the server (code and message)
+                serverResponseCode = conn.getResponseCode();
+                String serverResponseMessage = conn.getResponseMessage();
+
+//                if (serverResponseCode == 200) {
+//                    runOnUiThread(new Runnable() {
+//                        public void run() {
+//                            dispButton.setEnabled(true);
+//                            stopButton.setEnabled(false);
+//                            uploadButton.setEnabled(true);
+//                            downloadButton.setEnabled(true);
+//                            recordButton.setEnabled(true);
+//                        }
+//                    });
+//                }
+
+                fileInputStream.close();
+                dos.flush();
+                dos.close();
+
+            } catch (Exception e) {
+            }
+        }
+        return serverResponseCode;
+    }
+
+    public void downloadFileFromServer(final String source, String dest, String fileName) {
+        try {
+            TrustManager[] trustAllCerts = new TrustManager[]{
+                    new X509TrustManager() {
+                        public X509Certificate[] getAcceptedIssuers() {return null;}
+                        public void checkClientTrusted(X509Certificate[] certs, String authType) {}
+                        public void checkServerTrusted(X509Certificate[] certs, String authType) {}
+                    }
+            };
+
+            try {
+                SSLContext sc = SSLContext.getInstance("SSL");
+                sc.init(null, trustAllCerts, new SecureRandom());
+                HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+            } catch (Exception e) {
+                Toast.makeText(Assignment2.this, "Error in downloading", Toast.LENGTH_SHORT).show();
+                //enable all buttons
+            }
+
+            URL url = new URL(source);
+            Log.d("1", "1");
+            HttpsURLConnection ucon = (HttpsURLConnection) url.openConnection();
+            InputStream is = ucon.getInputStream();
+            BufferedInputStream bis = new BufferedInputStream(is);
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream(50);
+            int current = 0;
+            while ((current = bis.read()) != -1) {
+                buffer.write((byte) current);
+            }
+
+            FileOutputStream fos = new FileOutputStream(new File(FILE_PATH +File.separator+"Downloaded_DB"));
+            fos.write(buffer.toByteArray());
+            fos.close();
+            runOnUiThread(new Runnable() {
+                public void run() {
+                    Toast.makeText(Assignment2.this, "Download Complete", Toast.LENGTH_SHORT).show();
+                    //enable all buttons
+                    //update graph
+                }
+            });
+
+        } catch (Exception e) {
+            Log.d("Dwnleoor", e.getMessage() );
+            runOnUiThread(new Runnable() {
+                public void run() {
+                    Toast.makeText(Assignment2.this, "Download Error", Toast.LENGTH_SHORT).show();
+                    //enable all buttons
+
+                }
+            });
+        }
+    }
 
 
 }
