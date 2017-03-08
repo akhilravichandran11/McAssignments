@@ -69,10 +69,8 @@ public class Assignment2 extends AppCompatActivity{
     EditText widgetPatientID;
     EditText widgetPatientAge;
     RadioGroup widgetPatientSex;
-    String patientNameText;
-    String patientIDText;
-    String patientAgeText;
-    String patientSexText;
+
+    PatientInfo patientInfo;
 
     SQLiteDatabase db;
     public String TABLE = "dude"+System.currentTimeMillis();
@@ -124,6 +122,11 @@ public class Assignment2 extends AppCompatActivity{
 
 
         buttonRun= (Button)findViewById(R.id.buttonRun);
+        buttonStop= (Button)findViewById(R.id.buttonStop);
+        buttonDownload= (Button)findViewById(R.id.buttonDownload);
+        buttonUpload= (Button)findViewById(R.id.buttonUpload);
+
+
         buttonRun.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //start
@@ -135,7 +138,7 @@ public class Assignment2 extends AppCompatActivity{
                 if(flag == null || !flag){
                     flag = true;
 
-                    PatientInfo patientInfo = new PatientInfo(widgetPatientName.getText().toString(), widgetPatientAge.getText().toString(), widgetPatientID.getText().toString(), true);
+                    patientInfo = new PatientInfo(widgetPatientName.getText().toString(), widgetPatientAge.getText().toString(), widgetPatientID.getText().toString(), true);
                     TABLE = patientInfo.table_name;
                     TABLE = TABLE.replace(" ", "_");
                     Toast.makeText(Assignment2.this, "DB Name: " + TABLE, Toast.LENGTH_SHORT).show();
@@ -171,7 +174,6 @@ public class Assignment2 extends AppCompatActivity{
         });
 
 
-        buttonStop= (Button)findViewById(R.id.buttonStop);
         buttonStop.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 flag = false;
@@ -186,8 +188,7 @@ public class Assignment2 extends AppCompatActivity{
             }
         });
 
-        buttonDownload= (Button)findViewById(R.id.buttonDownload);
-        buttonUpload= (Button)findViewById(R.id.buttonUpload);
+
         buttonDownload.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 buttonRun.setEnabled(false);
@@ -225,6 +226,7 @@ public class Assignment2 extends AppCompatActivity{
                 buttonDownload.setEnabled(false);
                 uploadFileToServer(DATABASE_LOCATION, "https://impact.asu.edu/CSE535Spring17Folder/UploadToServer.php", DATABASE_NAME);
                 Toast.makeText(Assignment2.this, "Upload Ends", Toast.LENGTH_SHORT).show();
+
             }
         });
     }
@@ -515,9 +517,15 @@ public class Assignment2 extends AppCompatActivity{
         try {
             TrustManager[] trustAllCerts = new TrustManager[]{
                     new X509TrustManager() {
-                        public X509Certificate[] getAcceptedIssuers() {return null;}
-                        public void checkClientTrusted(X509Certificate[] certs, String authType) {}
-                        public void checkServerTrusted(X509Certificate[] certs, String authType) {}
+                        public X509Certificate[] getAcceptedIssuers() {
+                            return null;
+                        }
+
+                        public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                        }
+
+                        public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                        }
                     }
             };
 
@@ -541,7 +549,7 @@ public class Assignment2 extends AppCompatActivity{
                 buffer.write((byte) current);
             }
 
-            FileOutputStream fos = new FileOutputStream(new File(FILE_PATH +File.separator+"Downloaded_DB"));
+            FileOutputStream fos = new FileOutputStream(new File(FILE_PATH + File.separator + "Downloaded_DB"));
             fos.write(buffer.toByteArray());
             fos.close();
             runOnUiThread(new Runnable() {
@@ -553,7 +561,7 @@ public class Assignment2 extends AppCompatActivity{
             });
 
         } catch (Exception e) {
-            Log.d("Dwnleoor", e.getMessage() );
+            Log.d("Dwnleoor", e.getMessage());
             runOnUiThread(new Runnable() {
                 public void run() {
                     Toast.makeText(Assignment2.this, "Download Error", Toast.LENGTH_SHORT).show();
@@ -562,6 +570,29 @@ public class Assignment2 extends AppCompatActivity{
                 }
             });
         }
+    }
+
+    private void disableAllButtons()
+    {
+        disableOrEnableButtons(false,false,false,false);
+    }
+
+    private void enableAllButtons()
+    {
+        disableOrEnableButtons(true,true,true,true);
+    }
+
+    private void disableOrEnableButtons(boolean run,boolean stop,boolean upload,boolean download)
+    {
+        buttonRun.setEnabled(run);
+        buttonStop.setEnabled(stop);
+        buttonUpload.setEnabled(upload);
+        buttonDownload.setEnabled(download);
+    }
+
+    private void uploadDatabaseData()
+    {
+
     }
 
 
