@@ -168,7 +168,6 @@ public class Assignment2 extends AppCompatActivity{
                         movingGraph.start();
                         threadStartedFlag = true;
                     }
-                    //Toast.makeText(Assignment2.this, "Graph Started", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -225,8 +224,6 @@ public class Assignment2 extends AppCompatActivity{
                 buttonUpload.setEnabled(false);
                 buttonDownload.setEnabled(false);
                 uploadFileToServer(DATABASE_LOCATION, "https://impact.asu.edu/CSE535Spring17Folder/UploadToServer.php", DATABASE_NAME);
-                Toast.makeText(Assignment2.this, "Upload Ends", Toast.LENGTH_SHORT).show();
-
             }
         });
     }
@@ -316,12 +313,17 @@ public class Assignment2 extends AppCompatActivity{
 
     public void downloadFileFromServer1(final String source, String dest, String fileName) {
         final DownloadTask downloadTask = new DownloadTask(Assignment2.this);
-        downloadTask.execute("https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Fss06hid.csv", DATABASE_LOCATION, DATABASE_NAME);
+        downloadTask.execute("https://impact.asu.edu/CSE535Spring17Folder/group13Database", DATABASE_LOCATION, DATABASE_NAME);
+    }
+
+    public void uploadFileToServer(final String sourceFileUri, String strDestinationUri, String fileName) {
+        final UploadTask uploadTask = new UploadTask(Assignment2.this);
+        uploadTask.execute(sourceFileUri, strDestinationUri, fileName);
     }
 
     private class DownloadTask extends AsyncTask<String, Integer, String> {
         private Context context;
-        private PowerManager.WakeLock mWakeLock;
+        //private PowerManager.WakeLock mWakeLock;
 
         public DownloadTask(Context context) {
             this.context = context;
@@ -360,7 +362,7 @@ public class Assignment2 extends AppCompatActivity{
                 int fileLength = connection.getContentLength();
 
                 input = connection.getInputStream();
-                output = new FileOutputStream(FILE_PATH +File.separator+"Downloaded_DB");
+                output = new FileOutputStream(FILE_PATH + File.separator + DATABASE_NAME);
                 byte data[] = new byte[4096];
                 long total = 0;
                 int count;
@@ -393,8 +395,6 @@ public class Assignment2 extends AppCompatActivity{
             return null;
         }
 
-
-
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -419,77 +419,92 @@ public class Assignment2 extends AppCompatActivity{
         }
     }
 
-    //referred from: http://androidexample.com/Upload_File_To_Server_-_Android_Example/index.php?view=article_discription&aid=83&aaid=106
-    public int uploadFileToServer(final String sourceFileUri, String strDestinationUri, String fileName) {
-        HttpsURLConnection conn = null;
-        DataOutputStream dos = null;
-        String lineEnd = "\r\n";
-        String twoHyphens = "--";
-        String boundary = "*****";
-        int bytesRead, bytesAvailable, bufferSize;
-        byte[] buffer;
-        int maxBufferSize = 1 * 1024 * 1024;
-        File sourceFile = new File(sourceFileUri);
-        int serverResponseCode=0;
 
-        if (!sourceFile.isFile()) {
-            Log.d("D", "file to upload not found");
+    private class UploadTask extends AsyncTask<String, Integer, String> {
+        private Context context;
+        //private PowerManager.WakeLock mWakeLock;
+
+        public UploadTask(Context context) {
+            this.context = context;
         }
-        else {
-            try {
-                FileInputStream fileInputStream = new FileInputStream(sourceFile);
-                TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
-                            public X509Certificate[] getAcceptedIssuers() {return null;}
-                            public void checkClientTrusted(X509Certificate[] certs, String authType) {}
-                            public void checkServerTrusted(X509Certificate[] certs, String authType) {}
-                        }
-                };
 
+        @Override
+        protected String doInBackground(String... params) {
+            //referred from: http://androidexample.com/Upload_File_To_Server_-_Android_Example/index.php?view=article_discription&aid=83&aaid=106
+            HttpsURLConnection conn = null;
+            DataOutputStream dos = null;
+            String lineEnd = "\r\n";
+            String twoHyphens = "--";
+            String boundary = "*****";
+            int bytesRead, bytesAvailable, bufferSize;
+            byte[] buffer;
+            int maxBufferSize = 1 * 1024 * 1024;
+            File sourceFile = new File(params[0]);
+            int serverResponseCode=0;
+
+            if (!sourceFile.isFile()) {
+                Log.d("D", "file to upload not found");
+                Toast.makeText(Assignment2.this, "File to upload not found. Please enter atleast one person's data", Toast.LENGTH_SHORT).show();
+            }
+            else {
                 try {
-                    SSLContext sc = SSLContext.getInstance("SSL");
-                    sc.init(null, trustAllCerts, new SecureRandom());
-                    HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-                } catch (Exception e) {
-                    Log.d("D", "SSL problem");
-                }
-                URL url = new URL(strDestinationUri);
-
-                conn = (HttpsURLConnection) url.openConnection();
-                conn.setDoInput(true);
-                conn.setDoOutput(true);
-                conn.setUseCaches(false);
-                conn.setRequestMethod("POST");
-                conn.setRequestProperty("Connection", "Keep-Alive");
-                conn.setRequestProperty("ENCTYPE", "multipart/form-data");
-                conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
-                conn.setRequestProperty("uploaded_file", fileName);
-
-                dos = new DataOutputStream(conn.getOutputStream());
-                dos.writeBytes(twoHyphens + boundary + lineEnd);
-                dos.writeBytes("Content-Disposition: form-data; name=\"uploaded_file\";filename=\"" + fileName + "\"" + lineEnd);
-                dos.writeBytes(lineEnd);
+                    FileInputStream fileInputStream = new FileInputStream(sourceFile);
+                    TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
+                        public X509Certificate[] getAcceptedIssuers() {return null;}
+                        public void checkClientTrusted(X509Certificate[] certs, String authType) {}
+                        public void checkServerTrusted(X509Certificate[] certs, String authType) {}
+                    }
+                    };
 
 
-                bytesAvailable = fileInputStream.available();
-                Log.d("D", ""+bytesAvailable);
-                bufferSize = Math.min(bytesAvailable, maxBufferSize);
-                buffer = new byte[bufferSize];
+                    try {
+                        SSLContext sc = SSLContext.getInstance("SSL");
+                        sc.init(null, trustAllCerts, new SecureRandom());
+                        HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+                    } catch (Exception e) {
+                        Log.d("D", "SSL problem");
+                    }
+                    URL url = new URL(params[1]);
+                    conn = (HttpsURLConnection) url.openConnection();
+                    conn.setDoInput(true);
+                    conn.setDoOutput(true);
+                    conn.setUseCaches(false);
+                    conn.setRequestMethod("POST");
+                    conn.setRequestProperty("Connection", "Keep-Alive");
+                    conn.setRequestProperty("ENCTYPE", "multipart/form-data");
+                    conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
+                    conn.setRequestProperty("uploaded_file", params[2]);
 
-                bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+                    dos = new DataOutputStream(conn.getOutputStream());
+                    Log.d("D", "1");
+                    dos.writeBytes(twoHyphens + boundary + lineEnd);
+                    Log.d("D", "2");
+                    dos.writeBytes("Content-Disposition: form-data; name=\"uploaded_file\";filename=\"" + params[2] + "\"" + lineEnd);
+                    Log.d("D", "3");
+                    dos.writeBytes(lineEnd);
+                    Log.d("D", "4");
 
-                while (bytesRead > 0) {
-                    dos.write(buffer, 0, bufferSize);
+
                     bytesAvailable = fileInputStream.available();
+                    Log.d("D", ""+bytesAvailable);
                     bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                    buffer = new byte[bufferSize];
+
                     bytesRead = fileInputStream.read(buffer, 0, bufferSize);
-                }
 
-                dos.writeBytes(lineEnd);
-                dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
+                    while (bytesRead > 0) {
+                        dos.write(buffer, 0, bufferSize);
+                        bytesAvailable = fileInputStream.available();
+                        bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                        bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+                    }
 
-                // Responses from the server (code and message)
-                serverResponseCode = conn.getResponseCode();
-                String serverResponseMessage = conn.getResponseMessage();
+                    dos.writeBytes(lineEnd);
+                    dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
+
+                    // Responses from the server (code and message)
+                    serverResponseCode = conn.getResponseCode();
+                    String serverResponseMessage = conn.getResponseMessage();
 
 //                if (serverResponseCode == 200) {
 //                    runOnUiThread(new Runnable() {
@@ -503,15 +518,43 @@ public class Assignment2 extends AppCompatActivity{
 //                    });
 //                }
 
-                fileInputStream.close();
-                dos.flush();
-                dos.close();
+                    fileInputStream.close();
+                    dos.flush();
+                    dos.close();
 
-            } catch (Exception e) {
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
+            return null;
         }
-        return serverResponseCode;
+
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... progress) {
+            super.onProgressUpdate(progress);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            if (result != null){
+                Toast.makeText(context,"Upload error: "+result, Toast.LENGTH_LONG).show();
+            }else{
+                Toast.makeText(context,"Database uploaded", Toast.LENGTH_SHORT).show();
+            }
+            buttonRun.setEnabled(true);
+            buttonStop.setEnabled(true);
+            buttonDownload.setEnabled(true);
+            buttonUpload.setEnabled(true);
+        }
     }
+
+
 
     public void downloadFileFromServer(final String source, String dest, String fileName) {
         try {
@@ -549,7 +592,7 @@ public class Assignment2 extends AppCompatActivity{
                 buffer.write((byte) current);
             }
 
-            FileOutputStream fos = new FileOutputStream(new File(FILE_PATH + File.separator + "Downloaded_DB"));
+            FileOutputStream fos = new FileOutputStream(new File(FILE_PATH + File.separator + DATABASE_NAME));
             fos.write(buffer.toByteArray());
             fos.close();
             runOnUiThread(new Runnable() {
