@@ -59,6 +59,7 @@ public class Assignment2 extends AppCompatActivity{
     int threadSleepTime = 1000;
     Boolean flag = null;
     Boolean threadStartedFlag=false;
+    Boolean downloadButtonPressed=false;
 
     Button buttonRun;
     Button buttonStop;
@@ -218,6 +219,17 @@ public class Assignment2 extends AppCompatActivity{
                 buttonUpload.setEnabled(false);
                 buttonDownload.setEnabled(false);
                 downloadFileFromServer1("https://impact.asu.edu/CSE535Spring17Folder/group13Database", DATABASE_LOCATION, DATABASE_NAME);
+
+                if (widgetPatientName.getText().toString().matches("") || widgetPatientAge.getText().toString().matches("") || widgetPatientID.getText().toString().matches(""))    {
+                    Toast.makeText(Assignment2.this, "Download Complete\nBut Please fill all fields to show last 10 records and press DOWNLOAD again", Toast.LENGTH_LONG).show();
+                }
+                else {
+                    patientInfo = new PatientInfo(widgetPatientName.getText().toString(), widgetPatientAge.getText().toString(), widgetPatientID.getText().toString(), P_Male);
+                    TABLE = patientInfo.table_name;
+                    TABLE = TABLE.replace(" ", "_");
+                    downloadButtonPressed = true;
+                    getDataFromDatabase();
+                }
             }
         });
 
@@ -302,19 +314,28 @@ public class Assignment2 extends AppCompatActivity{
         int i=9;
         try {
             cursor = db.rawQuery(query, null);
-
             db.setTransactionSuccessful(); //commit your changes
         } catch (Exception e) {
             Log.d("exp",e.getMessage() );
         }
 
-        if (cursor.moveToFirst()) {
-            do {
-                values[i] = Float.parseFloat(cursor.getString(1));
-                valuesy[i] = Float.parseFloat(cursor.getString(2));
-                valuesz[i] = Float.parseFloat(cursor.getString(3));
-                i--;
-            } while (cursor.moveToNext() && i >= 0);
+        try {
+            if (cursor.moveToFirst()) {
+                do {
+                    values[i] = Float.parseFloat(cursor.getString(1));
+                    valuesy[i] = Float.parseFloat(cursor.getString(2));
+                    valuesz[i] = Float.parseFloat(cursor.getString(3));
+                    g.invalidate();
+                    g.setValues(values, valuesy, valuesz);
+                    i--;
+                } while (cursor.moveToNext() && i >= 0);
+            }
+        }
+        catch (Exception e)    {
+            if(downloadButtonPressed) {
+                Toast.makeText(Assignment2.this, "Download Complete\nBut no such person data recorded yet", Toast.LENGTH_LONG).show();
+                downloadButtonPressed=false;
+            }
         }
     }
 
@@ -417,7 +438,7 @@ public class Assignment2 extends AppCompatActivity{
             if (result != null){
                 Toast.makeText(context,"Download error: "+result, Toast.LENGTH_SHORT).show();
             }else{
-                Toast.makeText(context,"Database downloaded", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(context,"Database downloaded", Toast.LENGTH_SHORT).show();
             }
             buttonRun.setEnabled(true);
             buttonStop.setEnabled(false);
