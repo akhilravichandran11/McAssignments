@@ -151,10 +151,7 @@ public class Assignment2 extends AppCompatActivity{
                     flag = true;
 
                     //disable relevant buttons
-                    buttonRun.setEnabled(true);
-                    buttonStop.setEnabled(true);
-                    buttonUpload.setEnabled(false);
-                    buttonDownload.setEnabled(false);
+                    disableOrEnableButtons(true, true, false, false);
 
                     patientInfo = new PatientInfo(widgetPatientName.getText().toString(), widgetPatientAge.getText().toString(), widgetPatientID.getText().toString(), P_Male);
                     TABLE = patientInfo.table_name;
@@ -200,10 +197,7 @@ public class Assignment2 extends AppCompatActivity{
                 g.invalidate();
                 g.setValues(values, valuesy, valuesz);
                 //disable relevant buttons
-                buttonRun.setEnabled(true);
-                buttonStop.setEnabled(true);
-                buttonUpload.setEnabled(true);
-                buttonDownload.setEnabled(true);
+                enableAllButtons();
 
                 try {
                     unregisterReceiver(accelerometerReceiver);
@@ -214,21 +208,14 @@ public class Assignment2 extends AppCompatActivity{
 
         buttonDownload.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                buttonRun.setEnabled(false);
-                buttonStop.setEnabled(false);
-                buttonUpload.setEnabled(false);
-                buttonDownload.setEnabled(false);
+                disableAllButtons();
                 downloadFileFromServer1("https://impact.asu.edu/CSE535Spring17Folder/group13", DATABASE_LOCATION, DATABASE_NAME);
 
                 if (widgetPatientName.getText().toString().matches("") || widgetPatientAge.getText().toString().matches("") || widgetPatientID.getText().toString().matches(""))    {
                     Toast.makeText(Assignment2.this, "Download Complete\nBut Please fill all fields to show last 10 records and press DOWNLOAD again", Toast.LENGTH_LONG).show();
                 }
                 else {
-                    patientInfo = new PatientInfo(widgetPatientName.getText().toString(), widgetPatientAge.getText().toString(), widgetPatientID.getText().toString(), P_Male);
-                    TABLE = patientInfo.table_name;
-                    TABLE = TABLE.replace(" ", "_");
-                    downloadButtonPressed = true;
-                    getDataFromDatabase();
+                    //////
                 }
             }
         });
@@ -237,10 +224,7 @@ public class Assignment2 extends AppCompatActivity{
         buttonUpload.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //Toast.makeText(Assignment2.this, "Upload Begins", Toast.LENGTH_SHORT).show();
-                buttonRun.setEnabled(false);
-                buttonStop.setEnabled(false);
-                buttonUpload.setEnabled(false);
-                buttonDownload.setEnabled(false);
+                disableAllButtons();
                 uploadFileToServer(DATABASE_LOCATION, "https://impact.asu.edu/CSE535Spring17Folder/UploadToServer.php", DATABASE_NAME);
             }
         });
@@ -257,7 +241,7 @@ public class Assignment2 extends AppCompatActivity{
         for (int i = 0; i < 10; i++){
             vlabels[i]=String.valueOf(i);
         }
-        
+
         values= new float[valueArraySize];valuesy= new float[valueArraySize];valuesz= new float[valueArraySize];
 //        alValuesX = new LinkedList<Float>();alValuesY = new LinkedList<Float>();alValuesZ = new LinkedList<Float>();
         g = new GraphView(Assignment2.this, values, valuesy, valuesz, "Main Graph", vlabels, hlabels, GraphView.LINE);
@@ -296,6 +280,7 @@ public class Assignment2 extends AppCompatActivity{
             try {
 
                 db.execSQL("insert into " + TABLE + " (x,y,z) values ('" + x + "', '" + y + "','" + z + "' );");
+                //db.setTransactionSuccessful();
             }
             catch (SQLiteException e) {
 
@@ -387,7 +372,11 @@ public class Assignment2 extends AppCompatActivity{
                 if (connection.getResponseCode() != HttpsURLConnection.HTTP_OK) {
                     return "Server returned HTTP " + connection.getResponseCode() + " " + connection.getResponseMessage();
                 }
-
+                File sourceFile = new File(FILE_PATH + File.separator + DATABASE_NAME);
+                if(sourceFile.isFile())
+                {
+                    sourceFile.delete();
+                }
                 // display download percentage or -1
                 int fileLength = connection.getContentLength();
 
@@ -440,12 +429,21 @@ public class Assignment2 extends AppCompatActivity{
             if (result != null){
                 Toast.makeText(context,"Download error: "+result, Toast.LENGTH_SHORT).show();
             }else{
+
+
                 //Toast.makeText(context,"Database downloaded", Toast.LENGTH_SHORT).show();
+                db = SQLiteDatabase.openOrCreateDatabase(DATABASE_LOCATION, null);
+                db.beginTransaction();
+
+                patientInfo = new PatientInfo(widgetPatientName.getText().toString(), widgetPatientAge.getText().toString(), widgetPatientID.getText().toString(), P_Male);
+                TABLE = patientInfo.table_name;
+                TABLE = TABLE.replace(" ", "_");
+                downloadButtonPressed = true;
+                getDataFromDatabase();
+                db.endTransaction();
             }
-            buttonRun.setEnabled(true);
-            buttonStop.setEnabled(false);
-            buttonDownload.setEnabled(true);
-            buttonUpload.setEnabled(true);
+
+            disableOrEnableButtons(true, false, true, true);
         }
     }
 
@@ -562,10 +560,7 @@ public class Assignment2 extends AppCompatActivity{
             }else{
                 Toast.makeText(context,"Database uploaded", Toast.LENGTH_SHORT).show();
             }
-            buttonRun.setEnabled(true);
-            buttonStop.setEnabled(false);
-            buttonDownload.setEnabled(true);
-            buttonUpload.setEnabled(true);
+            disableOrEnableButtons(true, false, true, true);
         }
     }
 
