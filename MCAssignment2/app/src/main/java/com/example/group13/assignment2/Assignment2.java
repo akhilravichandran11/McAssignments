@@ -217,14 +217,13 @@ public class Assignment2 extends AppCompatActivity{
                 buttonStop.setEnabled(false);
                 buttonUpload.setEnabled(false);
                 buttonDownload.setEnabled(false);
-                downloadFileFromServer1("https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Fss06hid.csv", DATABASE_LOCATION, DATABASE_NAME);
+                downloadFileFromServer1("https://impact.asu.edu/CSE535Spring17Folder/group13Database", DATABASE_LOCATION, DATABASE_NAME);
             }
         });
 
 
         buttonUpload.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                
                 Toast.makeText(Assignment2.this, "Upload Begins", Toast.LENGTH_SHORT).show();
                 buttonRun.setEnabled(false);
                 buttonStop.setEnabled(false);
@@ -427,7 +426,6 @@ public class Assignment2 extends AppCompatActivity{
         }
     }
 
-
     private class UploadTask extends AsyncTask<String, Integer, String> {
         private Context context;
         //private PowerManager.WakeLock mWakeLock;
@@ -545,66 +543,6 @@ public class Assignment2 extends AppCompatActivity{
             buttonStop.setEnabled(false);
             buttonDownload.setEnabled(true);
             buttonUpload.setEnabled(true);
-        }
-    }
-
-
-    public void downloadFileFromServer(final String source, String dest, String fileName) {
-        try {
-            TrustManager[] trustAllCerts = new TrustManager[]{
-                    new X509TrustManager() {
-                        public X509Certificate[] getAcceptedIssuers() {
-                            return null;
-                        }
-
-                        public void checkClientTrusted(X509Certificate[] certs, String authType) {
-                        }
-
-                        public void checkServerTrusted(X509Certificate[] certs, String authType) {
-                        }
-                    }
-            };
-
-            try {
-                SSLContext sc = SSLContext.getInstance("SSL");
-                sc.init(null, trustAllCerts, new SecureRandom());
-                HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-            } catch (Exception e) {
-                Toast.makeText(Assignment2.this, "Error in downloading", Toast.LENGTH_SHORT).show();
-                //enable all buttons
-            }
-
-            URL url = new URL(source);
-            Log.d("1", "1");
-            HttpsURLConnection ucon = (HttpsURLConnection) url.openConnection();
-            InputStream is = ucon.getInputStream();
-            BufferedInputStream bis = new BufferedInputStream(is);
-            ByteArrayOutputStream buffer = new ByteArrayOutputStream(50);
-            int current = 0;
-            while ((current = bis.read()) != -1) {
-                buffer.write((byte) current);
-            }
-
-            FileOutputStream fos = new FileOutputStream(new File(FILE_PATH + File.separator + DATABASE_NAME));
-            fos.write(buffer.toByteArray());
-            fos.close();
-            runOnUiThread(new Runnable() {
-                public void run() {
-                    Toast.makeText(Assignment2.this, "Download Complete", Toast.LENGTH_SHORT).show();
-                    //enable all buttons
-                    //update graph
-                }
-            });
-
-        } catch (Exception e) {
-            Log.d("Dwnleoor", e.getMessage());
-            runOnUiThread(new Runnable() {
-                public void run() {
-                    Toast.makeText(Assignment2.this, "Download Error", Toast.LENGTH_SHORT).show();
-                    //enable all buttons
-
-                }
-            });
         }
     }
 
