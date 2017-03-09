@@ -76,7 +76,7 @@ public class Assignment2 extends AppCompatActivity{
 
     SQLiteDatabase db;
     public String TABLE = "dude"+System.currentTimeMillis();
-    public static final String DATABASE_NAME = "group13Database";
+    public static final String DATABASE_NAME = "group13";
     public static final String FILE_PATH = Environment.getExternalStorageDirectory() + File.separator + "Mydata";
     public static final String DATABASE_LOCATION = FILE_PATH + File.separator + DATABASE_NAME;
 
@@ -151,7 +151,7 @@ public class Assignment2 extends AppCompatActivity{
                     flag = true;
 
                     //disable relevant buttons
-                    buttonRun.setEnabled(false);
+                    buttonRun.setEnabled(true);
                     buttonStop.setEnabled(true);
                     buttonUpload.setEnabled(false);
                     buttonDownload.setEnabled(false);
@@ -201,7 +201,7 @@ public class Assignment2 extends AppCompatActivity{
                 g.setValues(values, valuesy, valuesz);
                 //disable relevant buttons
                 buttonRun.setEnabled(true);
-                buttonStop.setEnabled(false);
+                buttonStop.setEnabled(true);
                 buttonUpload.setEnabled(true);
                 buttonDownload.setEnabled(true);
 
@@ -218,7 +218,7 @@ public class Assignment2 extends AppCompatActivity{
                 buttonStop.setEnabled(false);
                 buttonUpload.setEnabled(false);
                 buttonDownload.setEnabled(false);
-                downloadFileFromServer1("https://impact.asu.edu/CSE535Spring17Folder/group13Database", DATABASE_LOCATION, DATABASE_NAME);
+                downloadFileFromServer1("https://impact.asu.edu/CSE535Spring17Folder/group13", DATABASE_LOCATION, DATABASE_NAME);
 
                 if (widgetPatientName.getText().toString().matches("") || widgetPatientAge.getText().toString().matches("") || widgetPatientID.getText().toString().matches(""))    {
                     Toast.makeText(Assignment2.this, "Download Complete\nBut Please fill all fields to show last 10 records and press DOWNLOAD again", Toast.LENGTH_LONG).show();
@@ -236,7 +236,7 @@ public class Assignment2 extends AppCompatActivity{
 
         buttonUpload.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Toast.makeText(Assignment2.this, "Upload Begins", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(Assignment2.this, "Upload Begins", Toast.LENGTH_SHORT).show();
                 buttonRun.setEnabled(false);
                 buttonStop.setEnabled(false);
                 buttonUpload.setEnabled(false);
@@ -341,7 +341,7 @@ public class Assignment2 extends AppCompatActivity{
 
     public void downloadFileFromServer1(final String source, String dest, String fileName) {
         final DownloadTask downloadTask = new DownloadTask(Assignment2.this);
-        downloadTask.execute("https://impact.asu.edu/CSE535Spring17Folder/group13Database", DATABASE_LOCATION, DATABASE_NAME);
+        downloadTask.execute("https://impact.asu.edu/CSE535Spring17Folder/group13", DATABASE_LOCATION, DATABASE_NAME);
     }
 
     public void uploadFileToServer(final String sourceFileUri, String strDestinationUri, String fileName) {
