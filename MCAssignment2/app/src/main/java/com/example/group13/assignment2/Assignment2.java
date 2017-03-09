@@ -159,7 +159,7 @@ public class Assignment2 extends AppCompatActivity{
                     patientInfo = new PatientInfo(widgetPatientName.getText().toString(), widgetPatientAge.getText().toString(), widgetPatientID.getText().toString(), P_Male);
                     TABLE = patientInfo.table_name;
                     TABLE = TABLE.replace(" ", "_");
-                    Toast.makeText(Assignment2.this, "DB Name: " + TABLE, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Assignment2.this, "Table Name: " + TABLE, Toast.LENGTH_SHORT).show();
 
                     try {
 
@@ -334,6 +334,8 @@ public class Assignment2 extends AppCompatActivity{
         catch (Exception e)    {
             if(downloadButtonPressed) {
                 Toast.makeText(Assignment2.this, "Download Complete\nBut no such person data recorded yet", Toast.LENGTH_LONG).show();
+                g.invalidate();
+                g.setValues(new float[10], new float[10], new float[10]);
                 downloadButtonPressed=false;
             }
         }
