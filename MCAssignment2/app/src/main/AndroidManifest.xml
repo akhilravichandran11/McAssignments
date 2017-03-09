@@ -6,7 +6,7 @@
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="MCAssignment2"
+        android:label="Group 13"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".Assignment2"
