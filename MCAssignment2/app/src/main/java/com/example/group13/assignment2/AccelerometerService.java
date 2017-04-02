@@ -21,11 +21,10 @@ public class AccelerometerService extends Service implements SensorEventListener
 
     private SensorManager mSensorManager;
     private Sensor mSensorAccelerometer;
-    int accelerometerSamplingRate = 1000000;
     float x_value;
     float y_value;
     float z_value;
-    public static int timeDelay = 1000;
+    public static int timeDelay = 100;
     public long lastSaved;
     final static String ACCELEROMETER_INTENET_ACTION = "PUSH_ACCELEROMETER_DATA";
 
@@ -79,7 +78,7 @@ public class AccelerometerService extends Service implements SensorEventListener
 
         sendBroadcast(intent);
 
-//        Log.d("sensorChanged", "X - "+ Float.toString(x_value) + " | Y - "+ Float.toString(y_value) + " | Z - "+ Float.toString(z_value));
+        Log.d("sensorChanged", "X - "+ Float.toString(x_value) + " | Y - "+ Float.toString(y_value) + " | Z - "+ Float.toString(z_value));
 
     }
 
