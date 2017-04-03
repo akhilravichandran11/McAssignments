@@ -18,6 +18,8 @@ import android.widget.Toast;
 
 import java.io.File;
 
+import libsvm.svm_model;
+
 public class UI_Handler extends AppCompatActivity {
 
     SQLiteDatabase db;
@@ -43,6 +45,9 @@ public class UI_Handler extends AppCompatActivity {
         buttonTrain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                SVM svm = new SVM();
+                svm_model svm_model_instance = svm.svmTrain(DATABASE_LOCATION, 0, 0);
+
 
             }
         });

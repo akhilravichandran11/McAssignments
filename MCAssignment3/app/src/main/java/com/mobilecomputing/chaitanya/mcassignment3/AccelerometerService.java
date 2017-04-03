@@ -23,7 +23,7 @@ public class AccelerometerService extends Service implements SensorEventListener
     private Sensor mSensorAccelerometer;
     ArrayList<Float> valueList;
     int count = 0;
-    public static int timeDelay = 100;
+    public static int timeDelay = 10;
     public long lastSaved;
     final static String ACCELEROMETER_INTENET_ACTION = "PUSH_ACCELEROMETER_DATA";
 
@@ -48,7 +48,6 @@ public class AccelerometerService extends Service implements SensorEventListener
         Sensor mySensor = sensorEvent.sensor;
         if (mySensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             if (System.currentTimeMillis() - lastSaved > timeDelay) {
-
                 lastSaved = System.currentTimeMillis();
                 getAccelerometer(sensorEvent);
             }
@@ -70,12 +69,13 @@ public class AccelerometerService extends Service implements SensorEventListener
         valueList.add(values[2]);
         count += 1;
 
-        if(count == 50) {
+        if(count == 50) {//original it should be 50
             count = 0;
             Intent intent = new Intent();
             intent.setAction(ACCELEROMETER_INTENET_ACTION);
             intent.putExtra("value_list", valueList);
             sendBroadcast(intent);
+            valueList.clear();
         }
         Log.d("sensorChanged", "X - " + Float.toString(values[0]) + " | Y - " + Float.toString(values[1]) + " | Z - " + Float.toString(values[2]));
 
