@@ -75,15 +75,12 @@ public class AccelerometerService extends Service implements SensorEventListener
 
         if(count == 50) {
             count = 0;
-
             Intent intent = new Intent();
             intent.setAction(ACCELEROMETER_INTENET_ACTION);
-
             intent.putExtra("value_list", valueList);
-
             sendBroadcast(intent);
         }
-        Log.d("sensorChanged", "X - " + Float.toString(x_value) + " | Y - " + Float.toString(y_value) + " | Z - " + Float.toString(z_value));
+        Log.d("sensorChanged", "X - " + Float.toString(values[0]) + " | Y - " + Float.toString(values[1]) + " | Z - " + Float.toString(values[2]));
 
     }
 

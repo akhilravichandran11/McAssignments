@@ -43,11 +43,15 @@ public class Calibration extends AppCompatActivity {
 
         try{
             File file = new File(DATABASE_LOCATION);
-            if (file.exists() && !file.isDirectory()){
-                makeDB(DATABASE_LOCATION, TABLE);
-            } else {
-                Toast.makeText(Calibration.this, "No file for database", Toast.LENGTH_LONG).show();
+            File folder = new File(FILE_PATH);
+            if (!folder.exists()) {
+                folder.mkdir();
             }
+//            if (file.exists() && !file.isDirectory()){
+                makeDB(DATABASE_LOCATION, TABLE);
+//            } else {
+//                Toast.makeText(Calibration.this, "No file for database", Toast.LENGTH_LONG).show();
+//            }
         }
         catch (SQLException e){
             Toast.makeText(Calibration.this, e.getMessage(), Toast.LENGTH_LONG).show();
