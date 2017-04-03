@@ -19,7 +19,11 @@
             </intent-filter>
         </activity>
         <activity android:name=".Calibration">
-
+            <receiver android:name=".AccelerometerReceiver">
+                <intent-filter>
+                    <action android:name="ACCELEROMETER_INTENET_ACTION" />
+                </intent-filter>
+            </receiver>
         </activity>
 
         <service
