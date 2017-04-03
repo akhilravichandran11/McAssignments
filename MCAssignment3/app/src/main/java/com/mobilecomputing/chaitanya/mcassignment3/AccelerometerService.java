@@ -21,9 +21,6 @@ public class AccelerometerService extends Service implements SensorEventListener
 
     private SensorManager mSensorManager;
     private Sensor mSensorAccelerometer;
-    float x_value;
-    float y_value;
-    float z_value;
     ArrayList<Float> valueList;
     int count = 0;
     public static int timeDelay = 100;
@@ -34,9 +31,9 @@ public class AccelerometerService extends Service implements SensorEventListener
     public void onCreate() {
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mSensorAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        mSensorManager.registerListener(this, mSensorAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(this, mSensorAccelerometer, SensorManager.SENSOR_DELAY_FASTEST);
         lastSaved = System.currentTimeMillis();
-        valueList = new ArrayList<>();
+        valueList = new ArrayList<Float>();
         Log.d("accelerometerService", "Created");
     }
 

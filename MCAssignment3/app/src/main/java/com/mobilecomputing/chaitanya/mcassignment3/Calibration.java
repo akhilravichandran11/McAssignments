@@ -150,9 +150,8 @@ public class Calibration extends AppCompatActivity {
                 insertQuery += " );";
                 db.execSQL(insertQuery);
                 counter = counter + 1;
-                if(counter == 1){
+                if(counter == 20){
                     counter = 0;
-                    unregisterReceiver(accelerometerReceiver);
                     enableButtons();
                 }
                 Toast.makeText(Calibration.this, Integer.toString(counter), Toast.LENGTH_LONG).show();
@@ -172,8 +171,10 @@ public class Calibration extends AppCompatActivity {
     }
 
     private void enableButtons(){
+        unregisterReceiver(accelerometerReceiver);
         if(!running1 && !walking1 && !eating1){
             db.setTransactionSuccessful();
+            db.endTransaction();
             db.close();
             Intent i = new Intent(Calibration.this, UI_Handler.class);
             startActivity(i);
