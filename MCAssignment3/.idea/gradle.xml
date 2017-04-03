@@ -8,7 +8,9 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/ajt-2.11" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/javaml-0.1.7" />
             <option value="$PROJECT_DIR$/libsvm" />
           </set>
         </option>

@@ -1,1 +1,1 @@
-include ':app', ':libsvm'
+include ':app', ':libsvm', ':javaml-0.1.7', ':ajt-2.11'

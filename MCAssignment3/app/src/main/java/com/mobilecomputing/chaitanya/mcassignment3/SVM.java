@@ -17,7 +17,6 @@ public class SVM {
     //class to train the model
     public svm_model svmTrain(String Filename1, int record_size, int feature_count )
     {
-
         //read the data from file and put it in the train module
         LinkedList<String> Dataset = new LinkedList<String>();//stores the lines from the given file
         try
@@ -37,7 +36,6 @@ public class SVM {
         }
         System.out.println("Dataset Size "+Dataset.size());
 
-        record_size = Dataset.size();
         double node_values[][] = new double[record_size][]; //jagged array used to store values
         int node_indexes[][] = new int[record_size][];//jagged array used to store node indexes
         double node_class_labels [] = new double[record_size];//store class labels
