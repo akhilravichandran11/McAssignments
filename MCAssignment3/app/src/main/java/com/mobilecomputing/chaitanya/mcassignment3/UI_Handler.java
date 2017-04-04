@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedWriter;
@@ -43,6 +44,7 @@ public class UI_Handler extends AppCompatActivity {
 
         Button buttonTrain;
         Button buttonCalibrate;
+        final TextView accuracyTextView = (TextView) findViewById(R.id.accuracyTextView);;
 
         buttonTrain= (Button)findViewById(R.id.train);
         buttonTrain.setOnClickListener(new View.OnClickListener() {
@@ -54,6 +56,7 @@ public class UI_Handler extends AppCompatActivity {
                 SVM1 svm1 = new SVM1();
                 svm1.train(filename);
                 float ACCURACY = svm1.ACCURACY;
+                accuracyTextView.setText(ACCURACY+"");
 
 //                Toast.makeText(UI_Handler.this, Dataset.get(0), Toast.LENGTH_SHORT).show();
 //                svm_model svm_model_instance = svm.svmTrain(Dataset, Dataset.size(), 0);
