@@ -8,25 +8,68 @@
     tools:context="com.mobilecomputing.chaitanya.mcassignment3.UI_Handler">
 
     <Button
-        android:text="Train and Test"
+        android:id="@+id/train"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginLeft="15dp"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="27dp"
-        android:id="@+id/train" />
+        android:layout_marginTop="40dp"
+        android:layout_gravity="center_horizontal"
+        android:text="Train and Test" />
 
-    <Button
-        android:id="@+id/calibrate"
+    <TextView
+        android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/train"
-        android:layout_alignRight="@+id/train"
-        android:layout_below="@+id/train"
-        android:layout_marginTop="48dp"
-        android:text="Calibrate" />
+        android:layout_margin="8dp"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:text="Training and Testing with SVM using K-fold cross validation with K=5"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="72dp"
+            android:textColor="#000000"
+            android:textSize="24dp"
+            android:text="Accuracy: "/>
+        <TextView
+            android:id="@+id/accuracyTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#000000"
+            android:textSize="24dp"
+            android:text="hh"/>
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="4dp">
+        <Button
+            android:id="@+id/calibrate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:text="Calibrate"
+            android:layout_marginBottom="112dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="52dp"
+            android:gravity="center"
+            android:text="Re-calibrating will delete the previously created database and you will have to perform all acitivities again to retrain it. PROCEED WITH CAUTION" />
+
+
+    </RelativeLayout>
 
 </LinearLayout>
