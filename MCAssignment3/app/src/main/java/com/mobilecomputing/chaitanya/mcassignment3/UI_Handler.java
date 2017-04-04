@@ -54,11 +54,10 @@ public class UI_Handler extends AppCompatActivity {
                 String filename = writetocsv(Dataset);
                 SVM1 svm1 = new SVM1();
                 svm1.train(filename);
+                float ACCURACY = svm1.ACCURACY;
 
 //                Toast.makeText(UI_Handler.this, Dataset.get(0), Toast.LENGTH_SHORT).show();
 //                svm_model svm_model_instance = svm.svmTrain(Dataset, Dataset.size(), 0);
-
-
             }
         });
 
