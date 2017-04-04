@@ -43,7 +43,6 @@ public class UI_Handler extends AppCompatActivity {
 
         Button buttonTrain;
         Button buttonCalibrate;
-        Button buttonTest;
 
         buttonTrain= (Button)findViewById(R.id.train);
         buttonTrain.setOnClickListener(new View.OnClickListener() {
@@ -67,14 +66,6 @@ public class UI_Handler extends AppCompatActivity {
             public void onClick(View v) {
                 Intent i = new Intent(UI_Handler.this, Calibration.class);
                 startActivity(i);
-            }
-        });
-
-        buttonTest= (Button)findViewById(R.id.test);
-        buttonTest.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
             }
         });
     }
