@@ -31,7 +31,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="72dp"
+            android:layout_marginLeft="20dp"
             android:textColor="#000000"
             android:textSize="24dp"
             android:text="Accuracy: "/>
@@ -41,6 +41,7 @@
             android:layout_height="wrap_content"
             android:textColor="#000000"
             android:textSize="24dp"
+            android:hint="Press above button"
             android:text=""/>
 
     </LinearLayout>
@@ -49,6 +50,7 @@
         android:id="@+id/timeAndPowerButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="48dp"
         android:layout_gravity="center"
         android:text="Time and Power Consumption"/>
 
