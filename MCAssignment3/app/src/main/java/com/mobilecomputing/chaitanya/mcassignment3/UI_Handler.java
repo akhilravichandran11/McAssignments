@@ -3,9 +3,11 @@ package com.mobilecomputing.chaitanya.mcassignment3;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
+import android.os.BatteryManager;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
@@ -54,16 +56,28 @@ public class UI_Handler extends AppCompatActivity {
                 LinkedList<String> Dataset = getDataFromDatabase();
                 String filename = writetocsv(Dataset);
 
-                //start battery profiling here
+                //start time and battery profiling here
+                BatteryManager mBatteryManager = (BatteryManager) getSystemService(Context.BATTERY_SERVICE);
+                long startBattery = 9;
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP)
+                    startBattery = mBatteryManager.getLongProperty(BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER);
+                long startTime = System.currentTimeMillis();
 
+                //training:
                 SVM1 svm1 = new SVM1();
                 svm1.train(filename);
 
-                //end battery profiling now
-                
+                //end time and battery profiling now
+                long endBattery = 9;
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP)
+                    endBattery = mBatteryManager.getLongProperty(BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER);
+                long endTime = System.currentTimeMillis();
+
+                Log.d("time and battery used: ", (endTime-startTime)+" " + endBattery+" "+startBattery);
 
                 float ACCURACY = svm1.ACCURACY;
                 accuracyTextView.setText(ACCURACY+"");
+
 
 //                Toast.makeText(UI_Handler.this, Dataset.get(0), Toast.LENGTH_SHORT).show();
 //                svm_model svm_model_instance = svm.svmTrain(Dataset, Dataset.size(), 0);
