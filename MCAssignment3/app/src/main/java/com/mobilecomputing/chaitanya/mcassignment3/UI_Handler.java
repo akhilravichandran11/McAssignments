@@ -50,11 +50,18 @@ public class UI_Handler extends AppCompatActivity {
         buttonTrain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SVM svm = new SVM();
+                //SVM svm = new SVM();
                 LinkedList<String> Dataset = getDataFromDatabase();
                 String filename = writetocsv(Dataset);
+
+                //start battery profiling here
+
                 SVM1 svm1 = new SVM1();
                 svm1.train(filename);
+
+                //end battery profiling now
+                
+
                 float ACCURACY = svm1.ACCURACY;
                 accuracyTextView.setText(ACCURACY+"");
 
