@@ -29,4 +29,5 @@ dependencies {
     compile project(':libsvm')
     compile project(':javaml-0.1.7')
     compile project(':ajt-2.11')
+    compile 'com.jjoe64:graphview:4.2.1'
 }

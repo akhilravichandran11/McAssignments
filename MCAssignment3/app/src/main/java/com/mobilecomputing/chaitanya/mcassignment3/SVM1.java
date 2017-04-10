@@ -33,7 +33,7 @@ public class SVM1 {
         filename=filename1;
         try {
             Dataset dataset = FileHandler.loadDataset(new File(filename), 150, ",");
-            Log.d("dataset size = ", dataset.get(0)+"");
+            //Log.d("dataset size = ", dataset.get(0)+"");
 
             Dataset[] datasetArray = divideDatasetInto5(dataset);
             Dataset dataset0 = datasetAdd(datasetArray[1], datasetArray[2], datasetArray[3], datasetArray[4]);
@@ -69,7 +69,7 @@ public class SVM1 {
             svmClassifier.buildClassifier(dataset4);
             accuracy[4] = getAccuracy(svmClassifier, datasetArray[4]);
 
-            Log.d("accuracy: ", accuracy[0]+""+accuracy[1]+""+accuracy[2]+""+accuracy[3]+""+accuracy[4]+"");
+            //Log.d("accuracy: ", accuracy[0]+""+accuracy[1]+""+accuracy[2]+""+accuracy[3]+""+accuracy[4]+"");
             ACCURACY = (accuracy[0]+accuracy[1]+accuracy[2]+accuracy[3]+accuracy[4])/5;
         }
         catch (Exception e) {

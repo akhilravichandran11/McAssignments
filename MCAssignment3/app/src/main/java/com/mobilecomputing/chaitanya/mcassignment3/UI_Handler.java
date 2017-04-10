@@ -1,5 +1,6 @@
 package com.mobilecomputing.chaitanya.mcassignment3;
 
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -7,6 +8,7 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
+import android.os.AsyncTask;
 import android.os.BatteryManager;
 import android.os.Environment;
 import android.os.Handler;
@@ -31,7 +33,7 @@ import libsvm.svm_model;
 public class UI_Handler extends AppCompatActivity {
 
     SQLiteDatabase db;
-    public String TABLE = "dude"+System.currentTimeMillis();
+    public String TABLE = "dude" + System.currentTimeMillis();
     public static final String DATABASE_NAME = "group13";
     public static final String FILE_PATH = Environment.getExternalStorageDirectory() + File.separator + "Mydata";
     public static final String DATABASE_LOCATION = FILE_PATH + File.separator + DATABASE_NAME;
@@ -49,9 +51,10 @@ public class UI_Handler extends AppCompatActivity {
         Button buttonTrain;
         Button timeAndPowerButton;
         Button buttonCalibrate;
-        final TextView accuracyTextView = (TextView) findViewById(R.id.accuracyTextView);;
+        final TextView accuracyTextView = (TextView) findViewById(R.id.accuracyTextView);
+        ;
 
-        buttonTrain= (Button)findViewById(R.id.train);
+        buttonTrain = (Button) findViewById(R.id.train);
         buttonTrain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -59,27 +62,12 @@ public class UI_Handler extends AppCompatActivity {
                 LinkedList<String> Dataset = getDataFromDatabase();
                 String filename = writetocsv(Dataset);
 
-                //start time and battery profiling here
-                BatteryManager mBatteryManager = (BatteryManager) getSystemService(Context.BATTERY_SERVICE);
-                long startBattery = 9;
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP)
-                    startBattery = mBatteryManager.getLongProperty(BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER);
-                long startTime = System.currentTimeMillis();
-
                 //training:
                 SVM1 svm1 = new SVM1();
                 svm1.train(filename);
 
-                //end time and battery profiling now
-                long endBattery = 9;
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP)
-                    endBattery = mBatteryManager.getLongProperty(BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER);
-                long endTime = System.currentTimeMillis();
-
-                Log.d("time and battery used: ", (endTime-startTime)+" " + endBattery+" "+startBattery);
-
                 float ACCURACY = svm1.ACCURACY;
-                accuracyTextView.setText(ACCURACY+"");
+                accuracyTextView.setText(ACCURACY + "");
 //                Toast.makeText(UI_Handler.this, Dataset.get(0), Toast.LENGTH_SHORT).show();
 //                svm_model svm_model_instance = svm.svmTrain(Dataset, Dataset.size(), 0);
             }
@@ -96,28 +84,33 @@ public class UI_Handler extends AppCompatActivity {
                 // referred from: https://source.android.com/devices/tech/power/device
                 BatteryManager mBatteryManager = (BatteryManager) getSystemService(Context.BATTERY_SERVICE);
                 long startBattery = 9;
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP)
-                    startBattery = mBatteryManager.getLongProperty(BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER); // it is remaining battery capacity in microampere-hours
-                long startTime = System.currentTimeMillis();
+                powerUsed = 0;
+                for(int j=0 ; j<20 ; j++)   {
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP)
+                        startBattery = mBatteryManager.getLongProperty(BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER); // it is remaining battery capacity in microampere-hours
+                    long startTime = System.currentTimeMillis();
 
-                for (int i=0 ; i<10 ; i++) {
+
                     //training:
                     SVM1 svm1 = new SVM1();
                     svm1.train(filename);
+
+
+                    //end time and battery profiling now
+                    long endBattery = 9;
+                    BatteryManager mBatteryManager2 = (BatteryManager) getSystemService(Context.BATTERY_SERVICE);
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP)
+                        endBattery = mBatteryManager2.getLongProperty(BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER);
+                    long endTime = System.currentTimeMillis();
+
+                    timeUsed = endTime - startTime;
+                    powerUsed = endBattery - startBattery;
+                    if (powerUsed < 0)
+                        powerUsed = powerUsed * (-1); //taking absolute value
+                    Log.d("time and battery used: ", (endTime - startTime) + " " + powerUsed);
+                    if(powerUsed > 0)
+                        break;
                 }
-
-                //end time and battery profiling now
-                long endBattery = 9;
-                BatteryManager mBatteryManager2 = (BatteryManager) getSystemService(Context.BATTERY_SERVICE);
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP)
-                    endBattery = mBatteryManager2.getLongProperty(BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER);
-                long endTime = System.currentTimeMillis();
-
-                Log.d("time and battery used: ", (endTime-startTime)+" " + (endBattery-startBattery));
-                timeUsed = endTime-startTime;
-                powerUsed = endBattery-startBattery;
-                if(powerUsed < 0)
-                    powerUsed = powerUsed*(-1); //taking absolute value
 
                 Intent intent = new Intent(UI_Handler.this, TimePowerActivity.class);
                 intent.putExtra("timeUsed", timeUsed);
@@ -126,7 +119,7 @@ public class UI_Handler extends AppCompatActivity {
             }
         });
 
-        buttonCalibrate= (Button)findViewById(R.id.calibrate);
+        buttonCalibrate = (Button) findViewById(R.id.calibrate);
         buttonCalibrate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -147,14 +140,12 @@ public class UI_Handler extends AppCompatActivity {
 
 //                db.execSQL("insert into " + TABLE + " (x,y,z) values ('" + x + "', '" + y + "','" + z + "' );");
                 //db.setTransactionSuccessful();
-            }
-            catch (SQLiteException e) {
+            } catch (SQLiteException e) {
 
-            }
-            finally {
+            } finally {
 //                db.endTransaction();
             }
-            Log.d("accelerometerReceiver", "X - "+ Float.toString(x) + " | Y - "+ Float.toString(y) + " | Z - "+ Float.toString(z));
+            //Log.d("accelerometerReceiver", "X - "+ Float.toString(x) + " | Y - "+ Float.toString(y) + " | Z - "+ Float.toString(z));
         }
 
     }
@@ -162,58 +153,57 @@ public class UI_Handler extends AppCompatActivity {
     private LinkedList<String> getDataFromDatabase() {
         db = SQLiteDatabase.openOrCreateDatabase(DATABASE_LOCATION, null);
         db.beginTransaction();
-        String query = "SELECT  * FROM training;" ;
+        String query = "SELECT  * FROM training;";
         Cursor cursor = null;
         try {
             cursor = db.rawQuery(query, null);
             db.setTransactionSuccessful(); //commit your changes
         } catch (Exception e) {
-            Log.d("exp",e.getMessage() );
+            Log.d("exp", e.getMessage());
         }
         LinkedList<String> Dataset = new LinkedList<String>();
         try {
             if (cursor.moveToFirst()) {
                 do {
                     StringBuilder stringBuilder = new StringBuilder();
-                    for(int j=2 ; j<152 ; j++)  {
+                    for (int j = 2; j < 152; j++) {
                         stringBuilder.append(cursor.getString(j));
                         stringBuilder.append(",");
                     }
                     String labelTemp = cursor.getString(1);
-                    if(labelTemp.equals("running"))
+                    if (labelTemp.equals("running"))
                         stringBuilder.append("1\n"); //do not remove new line
-                    else if(labelTemp.equals("walking"))
+                    else if (labelTemp.equals("walking"))
                         stringBuilder.append("2\n"); //do not remove new line
                     else
                         stringBuilder.append("3\n"); //do not remove new line
                     Dataset.add(stringBuilder.toString());
                 } while (cursor.moveToNext());
             }
-        }
-        catch (Exception e)    {
+        } catch (Exception e) {
             Toast.makeText(UI_Handler.this, e.getMessage(), Toast.LENGTH_LONG).show();
         }
         db.endTransaction();
         return Dataset;
     }
 
-    public String writetocsv(LinkedList<String> Dataset)    {
+    public String writetocsv(LinkedList<String> Dataset) {
         File file = new File(FILE_PATH + File.separator + "traindata.csv");
-        if(!file.exists()){
+        if (!file.exists()) {
             try {
                 file.createNewFile();
-                FileWriter fileWriter  = new FileWriter(file);
+                FileWriter fileWriter = new FileWriter(file);
                 BufferedWriter bfWriter = new BufferedWriter(fileWriter);
 
-                for(int i=0 ; i<Dataset.size() ; i++) {
+                for (int i = 0; i < Dataset.size(); i++) {
                     bfWriter.write(Dataset.get(i));
                 }
                 bfWriter.close();
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-    }
+        }
         return FILE_PATH + File.separator + "traindata.csv";
     }
+
 }
