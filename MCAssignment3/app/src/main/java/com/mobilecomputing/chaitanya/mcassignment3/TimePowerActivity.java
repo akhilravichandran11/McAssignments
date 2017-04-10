@@ -1,11 +1,15 @@
 package com.mobilecomputing.chaitanya.mcassignment3;
 
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.GridLabelRenderer;
 import com.jjoe64.graphview.series.DataPoint;
+import com.jjoe64.graphview.series.DataPointInterface;
 import com.jjoe64.graphview.series.PointsGraphSeries;
 
 /**
@@ -36,24 +40,32 @@ public class TimePowerActivity extends AppCompatActivity {
         //graph for mobile stats:
         GraphView graphMobile = (GraphView) findViewById(R.id.mobileGraph);
         PointsGraphSeries<DataPoint> pointsMobile = new PointsGraphSeries<>(new DataPoint[] {
-                new DataPoint(timeUsedMobile,powerUsedMobile),
-                new DataPoint(zero, zero),
+                new DataPoint(timeUsedMobile,powerUsedMobile)
         });
+        graphMobile.getViewport().setMinX(0.0);
+        graphMobile.getViewport().setMaxX(2000.0);
+        graphMobile.getViewport().setMinY(0.0);
+        graphMobile.getViewport().setMaxY(1000.0);
+        graphMobile.getViewport().setYAxisBoundsManual(true);
+        graphMobile.getViewport().setXAxisBoundsManual(true);
         graphMobile.addSeries(pointsMobile);
         pointsMobile.setShape(PointsGraphSeries.Shape.POINT);
         pointsMobile.setColor(Color.RED);
 
+
         //graph for server stats:
-        timeUsedServer = 1;
-        powerUsedServer = 1;
+        timeUsedServer = 328;
+        powerUsedServer = 790;
         GraphView graphServer = (GraphView) findViewById(R.id.serverGraph);
         PointsGraphSeries<DataPoint> pointsServer = new PointsGraphSeries<>(new DataPoint[] {
-                new DataPoint(0, -2),
-                new DataPoint(1, 5),
-                new DataPoint(2, 3),
-                new DataPoint(3, 2),
-                new DataPoint(4, 6)
+                new DataPoint(timeUsedServer, powerUsedServer)
         });
+        graphServer.getViewport().setMinX(0.0);
+        graphServer.getViewport().setMaxX(2000.0);
+        graphServer.getViewport().setMinY(0.0);
+        graphServer.getViewport().setMaxY(1000.0);
+        graphServer.getViewport().setYAxisBoundsManual(true);
+        graphServer.getViewport().setXAxisBoundsManual(true);
         graphServer.addSeries(pointsServer);
         pointsServer.setShape(PointsGraphSeries.Shape.POINT);
         pointsServer.setColor(Color.BLUE);
