@@ -34,6 +34,7 @@ public class UI_Handler extends AppCompatActivity {
     public static final String DATABASE_NAME = "group13";
     public static final String FILE_PATH = Environment.getExternalStorageDirectory() + File.separator + "Mydata";
     public static final String DATABASE_LOCATION = FILE_PATH + File.separator + DATABASE_NAME;
+    long timeUsed, powerUsed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +46,7 @@ public class UI_Handler extends AppCompatActivity {
 //        startService(intent);
 
         Button buttonTrain;
+        Button timeAndPowerButton;
         Button buttonCalibrate;
         final TextView accuracyTextView = (TextView) findViewById(R.id.accuracyTextView);;
 
@@ -77,10 +79,44 @@ public class UI_Handler extends AppCompatActivity {
 
                 float ACCURACY = svm1.ACCURACY;
                 accuracyTextView.setText(ACCURACY+"");
-
-
 //                Toast.makeText(UI_Handler.this, Dataset.get(0), Toast.LENGTH_SHORT).show();
 //                svm_model svm_model_instance = svm.svmTrain(Dataset, Dataset.size(), 0);
+            }
+        });
+
+        timeAndPowerButton = (Button) findViewById(R.id.timeAndPowerButton);
+        timeAndPowerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LinkedList<String> Dataset = getDataFromDatabase();
+                String filename = writetocsv(Dataset);
+
+                //start time and battery profiling here
+                // referred from: https://source.android.com/devices/tech/power/device
+                BatteryManager mBatteryManager = (BatteryManager) getSystemService(Context.BATTERY_SERVICE);
+                long startBattery = 9;
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP)
+                    startBattery = mBatteryManager.getLongProperty(BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER); // it is remaining battery capacity in microampere-hours
+                long startTime = System.currentTimeMillis();
+
+                for (int i=0 ; i<10 ; i++) {
+                    //training:
+                    SVM1 svm1 = new SVM1();
+                    svm1.train(filename);
+                }
+
+                //end time and battery profiling now
+                long endBattery = 9;
+                BatteryManager mBatteryManager2 = (BatteryManager) getSystemService(Context.BATTERY_SERVICE);
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP)
+                    endBattery = mBatteryManager2.getLongProperty(BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER);
+                long endTime = System.currentTimeMillis();
+
+                Log.d("time and battery used: ", (endTime-startTime)+" " + (endBattery-startBattery));
+                timeUsed = endTime-startTime;
+                powerUsed = endBattery-startBattery;
+
+                
             }
         });
 
