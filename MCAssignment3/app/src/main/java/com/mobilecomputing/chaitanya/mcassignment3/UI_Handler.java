@@ -23,6 +23,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.Time;
 import java.util.LinkedList;
 
 import libsvm.svm_model;
@@ -115,8 +116,13 @@ public class UI_Handler extends AppCompatActivity {
                 Log.d("time and battery used: ", (endTime-startTime)+" " + (endBattery-startBattery));
                 timeUsed = endTime-startTime;
                 powerUsed = endBattery-startBattery;
+                if(powerUsed < 0)
+                    powerUsed = powerUsed*(-1); //taking absolute value
 
-                
+                Intent intent = new Intent(UI_Handler.this, TimePowerActivity.class);
+                intent.putExtra("timeUsed", timeUsed);
+                intent.putExtra("powerUsed", powerUsed);
+                startActivity(intent);
             }
         });
 
