@@ -80,49 +80,6 @@ public class UI_Handler extends AppCompatActivity {
             public void onClick(View view) {
                 TimePowerAsyncTask timePowerAsyncTask = new TimePowerAsyncTask();
                 timePowerAsyncTask.execute();
-//                ProgressDialog progressDialog;
-//                progressDialog = ProgressDialog.show(UI_Handler.this, "Processing", "Please wait");
-//
-//                LinkedList<String> Dataset = getDataFromDatabase();
-//                String filename = writetocsv(Dataset);
-//
-//                //start time and battery profiling here
-//                // referred from: https://source.android.com/devices/tech/power/device
-//                BatteryManager mBatteryManager = (BatteryManager) getSystemService(Context.BATTERY_SERVICE);
-//                long startBattery = 9;
-//                powerUsed = 0;
-//                for(int j=0 ; j<20 ; j++)   {
-//                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP)
-//                        startBattery = mBatteryManager.getLongProperty(BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER); // it is remaining battery capacity in microampere-hours
-//                    long startTime = System.currentTimeMillis();
-//
-//
-//                    //training:
-//                    SVM1 svm1 = new SVM1();
-//                    svm1.train(filename);
-//
-//
-//                    //end time and battery profiling now
-//                    long endBattery = 9;
-//                    BatteryManager mBatteryManager2 = (BatteryManager) getSystemService(Context.BATTERY_SERVICE);
-//                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP)
-//                        endBattery = mBatteryManager2.getLongProperty(BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER);
-//                    long endTime = System.currentTimeMillis();
-//
-//                    timeUsed = endTime - startTime;
-//                    powerUsed = endBattery - startBattery;
-//                    if (powerUsed < 0)
-//                        powerUsed = powerUsed * (-1); //taking absolute value
-//                    Log.d("time and battery used: ", (endTime - startTime) + " " + powerUsed);
-//                    if(powerUsed > 0)
-//                        break;
-//                }
-//
-//                progressDialog.dismiss();
-//                Intent intent = new Intent(UI_Handler.this, TimePowerActivity.class);
-//                intent.putExtra("timeUsed", timeUsed);
-//                intent.putExtra("powerUsed", powerUsed);
-//                startActivity(intent);
             }
         });
 

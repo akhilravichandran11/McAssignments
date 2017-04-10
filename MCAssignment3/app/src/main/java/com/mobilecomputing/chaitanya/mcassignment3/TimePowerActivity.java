@@ -13,17 +13,19 @@ import com.jjoe64.graphview.series.PointsGraphSeries;
  */
 
 public class TimePowerActivity extends AppCompatActivity {
-    long timeUsedMobile, powerUsedMobile;
-    long timeUsedServer, powerUsedServer;
+    int timeUsedMobile, powerUsedMobile;
+    int timeUsedServer, powerUsedServer;
+    int zero;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_time_power);
 
+        zero = 0;
         Bundle bundle = getIntent().getExtras();
-        timeUsedMobile = bundle.getLong("timeUsed");
-        powerUsedMobile = bundle.getLong("powerUsed");
+        timeUsedMobile = (int) bundle.getLong("timeUsed");
+        powerUsedMobile = (int) bundle.getLong("powerUsed");
 
         /*
          * referred from: https://github.com/appsthatmatter/GraphView
@@ -34,7 +36,8 @@ public class TimePowerActivity extends AppCompatActivity {
         //graph for mobile stats:
         GraphView graphMobile = (GraphView) findViewById(R.id.mobileGraph);
         PointsGraphSeries<DataPoint> pointsMobile = new PointsGraphSeries<>(new DataPoint[] {
-                new DataPoint(timeUsedMobile, powerUsedMobile)
+                new DataPoint(timeUsedMobile,powerUsedMobile),
+                new DataPoint(zero, zero),
         });
         graphMobile.addSeries(pointsMobile);
         pointsMobile.setShape(PointsGraphSeries.Shape.POINT);
@@ -45,7 +48,11 @@ public class TimePowerActivity extends AppCompatActivity {
         powerUsedServer = 1;
         GraphView graphServer = (GraphView) findViewById(R.id.serverGraph);
         PointsGraphSeries<DataPoint> pointsServer = new PointsGraphSeries<>(new DataPoint[] {
-                new DataPoint(timeUsedServer, powerUsedServer)
+                new DataPoint(0, -2),
+                new DataPoint(1, 5),
+                new DataPoint(2, 3),
+                new DataPoint(3, 2),
+                new DataPoint(4, 6)
         });
         graphServer.addSeries(pointsServer);
         pointsServer.setShape(PointsGraphSeries.Shape.POINT);
