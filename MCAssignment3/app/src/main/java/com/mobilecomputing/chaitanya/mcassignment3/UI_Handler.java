@@ -1,18 +1,23 @@
 package com.mobilecomputing.chaitanya.mcassignment3;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.os.AsyncTask;
 import android.os.BatteryManager;
+import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -43,50 +48,12 @@ public class UI_Handler extends AppCompatActivity {
     public static final String FILE_PATH = Environment.getExternalStorageDirectory() + File.separator + "Mydata";
     public static final String DATABASE_LOCATION = FILE_PATH + File.separator + DATABASE_NAME;
     long timeUsed, powerUsed;
-    WebView webview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ui__handler);
-
-
-
-
-        // Prepare webview: add zoom controls and start zoomed out
-        webview = (WebView) findViewById(R.id.webview);
-        final WebSettings webSettings = webview.getSettings();
-        webSettings.setJavaScriptEnabled(true);
-        webSettings.setBuiltInZoomControls(true);
-        webSettings.setSupportZoom(true);
-        webSettings.setUseWideViewPort(true);
-        webview.setWebChromeClient(new WebChromeClient());
-        webview.setInitialScale(1);
-
-        webview.setWebViewClient(new WebViewClient() {
-            @Override
-            public void onPageFinished(WebView view, String url) {
-
-                int[][] walking = {{5, 4, 2}, {9, 6, 1}, {2, 7, 3}, {4, 5, 4}, {6, 8, 1}, {3, 4, 0}};
-                String text1 = Arrays.toString(walking);
-
-                int[][] running = {{6, 2, 5}, {0, 4, 9}, {3, 5, 9}, {6, 9, 1}, {1, 9, 2}};
-                String text2 = Arrays.toString(running);
-
-                int[][] eating = {{2, 2, 6}, {5, 1, 2}, {9, 9, 7}, {6, 9, 9}, {8, 4, 3}, {4, 1, 7}};
-                String text3 = Arrays.toString(eating);
-
-                webview.loadUrl("javascript:showGraph(" +
-                         text1 + ", " + text2 + ", "+ text3 + ")");
-            }
-        });
-        // Load base html from the assets directory
-        webview.loadUrl("file:///android_asset/html/graph.html");
-
-
-
-
-
+        if(runtime_permissions())  {}
 //        AccelerometerReceiver accelerometerReceiver = new AccelerometerReceiver();
 //        Intent intent = new Intent(this, AccelerometerService.class);
 //        startService(intent);
@@ -113,6 +80,8 @@ public class UI_Handler extends AppCompatActivity {
                 accuracyTextView.setText(ACCURACY + "");
 //                Toast.makeText(UI_Handler.this, Dataset.get(0), Toast.LENGTH_SHORT).show();
 //                svm_model svm_model_instance = svm.svmTrain(Dataset, Dataset.size(), 0);
+                Intent intent = new Intent(UI_Handler.this, webview.class);
+                startActivity(intent);
             }
         });
 
@@ -271,6 +240,29 @@ public class UI_Handler extends AppCompatActivity {
             intent.putExtra("powerUsed", powerUsed);
             startActivity(intent);        }
 
+    }
+
+
+    boolean runtime_permissions()   {
+        if(Build.VERSION.SDK_INT >= 23 && ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)   {
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, 100);
+            return true;
+        }
+        return false;
+    }
+
+    //referred from: https://www.youtube.com/watch?v=lvcGh2ZgHeA
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(requestCode == 100){
+            if(grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED)    {
+
+            }
+            else    {
+                runtime_permissions();
+            }
+        }
     }
 
 }
