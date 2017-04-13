@@ -1,18 +1,23 @@
 package com.mobilecomputing.chaitanya.mcassignment3;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.os.AsyncTask;
 import android.os.BatteryManager;
+import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -48,7 +53,7 @@ public class UI_Handler extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ui__handler);
-
+        if(runtime_permissions())  {}
 //        AccelerometerReceiver accelerometerReceiver = new AccelerometerReceiver();
 //        Intent intent = new Intent(this, AccelerometerService.class);
 //        startService(intent);
@@ -76,6 +81,7 @@ public class UI_Handler extends AppCompatActivity {
 //                Toast.makeText(UI_Handler.this, Dataset.get(0), Toast.LENGTH_SHORT).show();
 //                svm_model svm_model_instance = svm.svmTrain(Dataset, Dataset.size(), 0);
                 Intent intent = new Intent(UI_Handler.this, webview.class);
+                startActivity(intent);
             }
         });
 
@@ -234,6 +240,29 @@ public class UI_Handler extends AppCompatActivity {
             intent.putExtra("powerUsed", powerUsed);
             startActivity(intent);        }
 
+    }
+
+
+    boolean runtime_permissions()   {
+        if(Build.VERSION.SDK_INT >= 23 && ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)   {
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, 100);
+            return true;
+        }
+        return false;
+    }
+
+    //referred from: https://www.youtube.com/watch?v=lvcGh2ZgHeA
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(requestCode == 100){
+            if(grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED)    {
+
+            }
+            else    {
+                runtime_permissions();
+            }
+        }
     }
 
 }
