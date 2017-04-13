@@ -19,7 +19,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity android:name=".Calibration">
             <receiver android:name=".AccelerometerReceiver">
                 <intent-filter>
@@ -27,7 +26,6 @@
                 </intent-filter>
             </receiver>
         </activity>
-
         <activity android:name=".TimePowerActivity">
             <intent-filter>
                 <action android:name="com.mobilecomputing.chaitanya.mcassignment3.TIMEPOWERACTIVITY" />
@@ -35,7 +33,13 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <activity android:name=".webview">
+            <intent-filter>
+                <action android:name="com.mobilecomputing.chaitanya.mcassignment3.WEBVIEW" />
 
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
 
         <service
             android:name=".AccelerometerService"

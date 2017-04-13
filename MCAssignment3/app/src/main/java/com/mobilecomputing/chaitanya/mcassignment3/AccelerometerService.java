@@ -23,7 +23,7 @@ public class AccelerometerService extends Service implements SensorEventListener
     private Sensor mSensorAccelerometer;
     ArrayList<Float> valueList;
     int count = 0;
-    public static int timeDelay = 100;
+    public static int timeDelay = 10;
     public long lastSaved;
     final static String ACCELEROMETER_INTENET_ACTION = "PUSH_ACCELEROMETER_DATA";
 
