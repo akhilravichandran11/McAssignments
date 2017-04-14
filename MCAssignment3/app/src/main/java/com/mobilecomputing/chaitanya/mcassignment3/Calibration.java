@@ -64,14 +64,12 @@ public class Calibration extends AppCompatActivity {
         db.setTransactionSuccessful();
         db.endTransaction();
         db.close();
-        Intent i = new Intent(Calibration.this, UI_Handler.class);
-        i.putExtra("CalibrateBackButton", true);
-        startActivity(i);
     }
 
     public void makeDB(String DATABASE_LOCATION, String TABLE){
         db = SQLiteDatabase.openOrCreateDatabase(DATABASE_LOCATION, null);
         db.beginTransaction();
+        db.execSQL("DROP TABLE training");
         Toast.makeText(Calibration.this, "Press activity button to start calibrating Database", Toast.LENGTH_LONG).show();
 
         String createQuery;
