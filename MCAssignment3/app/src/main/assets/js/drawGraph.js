@@ -1,4 +1,4 @@
-function showGraph(){
+function showGraph(walking, running, eating){
     Highcharts.getOptions().colors = $.map(Highcharts.getOptions().colors, function (color) {
         return {
             radialGradient: {
@@ -47,18 +47,18 @@ function showGraph(){
             }
         },
         yAxis: {
-            min: 0,
-            max: 10,
+            min: -15,
+            max: 15,
             title: null
         },
         xAxis: {
-            min: 0,
-            max: 10,
+            min: -20,
+            max: 20,
             gridLineWidth: 1
         },
         zAxis: {
-            min: 0,
-            max: 10,
+            min: -20,
+            max: 20,
             showFirstLabel: false
         },
         legend: {
@@ -66,13 +66,13 @@ function showGraph(){
         },
         series: [{
             name: 'Eating',
-            data: [[6, 1, 3], [6, 9, 5], [4, 8, 2], [9, 7, 4], [2, 2, 6], [5, 1, 2], [9, 9, 7]]
+            data: eating
         }, {
             name: 'Running',
-            data: [[6, 2, 5], [0, 4, 9], [3, 5, 9], [6, 9, 1], [8, 4, 3], [1, 9, 2], [6, 9, 9]]
+            data: running
         },{
             name: 'Walking',
-            data: [[5, 4, 2], [9, 6, 1], [2, 7, 3], [4, 5, 4], [6, 8, 1], [3, 4, 0], [4, 1, 7]]
+            data: walking
         }
         ]
     });
