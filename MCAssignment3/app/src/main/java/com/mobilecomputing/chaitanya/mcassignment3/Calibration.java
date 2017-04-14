@@ -59,6 +59,16 @@ public class Calibration extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        db.setTransactionSuccessful();
+        db.endTransaction();
+        db.close();
+        Intent i = new Intent(Calibration.this, UI_Handler.class);
+        i.putExtra("CalibrateBackButton", true);
+        startActivity(i);
+    }
+
     public void makeDB(String DATABASE_LOCATION, String TABLE){
         db = SQLiteDatabase.openOrCreateDatabase(DATABASE_LOCATION, null);
         db.beginTransaction();

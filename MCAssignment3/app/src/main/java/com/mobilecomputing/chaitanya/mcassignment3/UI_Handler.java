@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
@@ -32,8 +33,11 @@ import android.widget.Toast;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.sql.Time;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -41,7 +45,7 @@ import java.util.LinkedList;
 import libsvm.svm_model;
 
 public class UI_Handler extends AppCompatActivity {
-
+    public boolean CalibrateBackButton = false;
     SQLiteDatabase db;
     public String TABLE = "dude" + System.currentTimeMillis();
     public static final String DATABASE_NAME = "group13";
@@ -53,7 +57,22 @@ public class UI_Handler extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ui__handler);
+
+        //ask for permissions:
         if(runtime_permissions())  {}
+
+        try {
+            Bundle bundle = getIntent().getExtras();
+            CalibrateBackButton = bundle.getBoolean("CalibrateBackButton");
+        }catch (Exception e)    {e.printStackTrace();}
+
+        if(!CalibrateBackButton) {
+            try {
+                copyAssets();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
 //        AccelerometerReceiver accelerometerReceiver = new AccelerometerReceiver();
 //        Intent intent = new Intent(this, AccelerometerService.class);
 //        startService(intent);
@@ -99,6 +118,7 @@ public class UI_Handler extends AppCompatActivity {
         buttonCalibrate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                CalibrateBackButton = true;
                 Intent i = new Intent(UI_Handler.this, Calibration.class);
                 startActivity(i);
             }
@@ -240,6 +260,62 @@ public class UI_Handler extends AppCompatActivity {
             intent.putExtra("powerUsed", powerUsed);
             startActivity(intent);        }
 
+    }
+
+    //referred from: http://stackoverflow.com/questions/4447477/how-to-copy-files-from-assets-folder-to-sdcard
+    public void copyAssets() {
+        AssetManager assetManager = getAssets();
+        String[] files = null;
+        try {
+            files = assetManager.list("");
+        } catch (IOException e) {
+            Log.e("tag", "Failed to get asset file list.", e);
+        }
+        if (files != null)
+            for (String filename : files) {
+                if (filename.contains("group13"))   {
+                    InputStream in = null;
+                    OutputStream out = null;
+                    try {
+                        in = assetManager.open(filename);
+                        File folder = new File(FILE_PATH);
+                        if (!folder.exists()) {
+                            folder.mkdir();
+                        }
+                        File outFile = new File(FILE_PATH, filename);
+                        out = new FileOutputStream(outFile);
+                        copyFile(in, out);
+                    }
+                    catch (IOException e) {
+                        Log.e("Copy fine failure of ", filename, e);
+                    }
+                    finally {
+                        if (in != null) {
+                            try {
+                                in.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        if (out != null) {
+                            try {
+                                out.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+            }
+    }
+
+    //referred from: http://stackoverflow.com/questions/4447477/how-to-copy-files-from-assets-folder-to-sdcard
+    private void copyFile(InputStream in, OutputStream out) throws IOException {
+        byte[] buffer = new byte[1024];
+        int read;
+        while((read = in.read(buffer)) != -1){
+            out.write(buffer, 0, read);
+        }
     }
 
 
