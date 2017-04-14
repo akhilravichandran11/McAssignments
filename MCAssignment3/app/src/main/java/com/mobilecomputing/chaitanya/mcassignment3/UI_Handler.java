@@ -57,9 +57,7 @@ public class UI_Handler extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ui__handler);
-
-        //ask for permissions:
-        if(runtime_permissions())  {}
+        runtime_permissions();
 
 
         Log.d("outside getdatabase", "gg");
