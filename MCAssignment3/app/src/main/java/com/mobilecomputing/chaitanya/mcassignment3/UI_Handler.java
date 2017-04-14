@@ -61,13 +61,11 @@ public class UI_Handler extends AppCompatActivity {
         //ask for permissions:
         if(runtime_permissions())  {}
 
-        try {
-            Bundle bundle = getIntent().getExtras();
-            CalibrateBackButton = bundle.getBoolean("CalibrateBackButton");
-        }catch (Exception e)    {e.printStackTrace();}
 
-        if(!CalibrateBackButton) {
+        Log.d("outside getdatabase", "gg");
+        if(!getDatabaseExists(this)) {
             try {
+                Log.d("entered in getdatabase", "gg");
                 copyAssets();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -185,7 +183,7 @@ public class UI_Handler extends AppCompatActivity {
 
     public String writetocsv(LinkedList<String> Dataset) {
         File file = new File(FILE_PATH + File.separator + "traindata.csv");
-        if (!file.exists()) {
+//        if (!file.exists()) {
             try {
                 file.createNewFile();
                 FileWriter fileWriter = new FileWriter(file);
@@ -198,7 +196,7 @@ public class UI_Handler extends AppCompatActivity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
+//        }
         return FILE_PATH + File.separator + "traindata.csv";
     }
 
@@ -260,6 +258,13 @@ public class UI_Handler extends AppCompatActivity {
             intent.putExtra("powerUsed", powerUsed);
             startActivity(intent);        }
 
+    }
+
+
+    private static boolean getDatabaseExists(Context context) {
+        File databaseFile = context.getDatabasePath(DATABASE_LOCATION);
+        Log.d("DB exists: ", databaseFile.exists()+"");
+        return databaseFile.exists();
     }
 
     //referred from: http://stackoverflow.com/questions/4447477/how-to-copy-files-from-assets-folder-to-sdcard
