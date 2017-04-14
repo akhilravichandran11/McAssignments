@@ -1,4 +1,4 @@
-function showGraph(running, walking, eating){
+function showGraph(){
     Highcharts.getOptions().colors = $.map(Highcharts.getOptions().colors, function (color) {
         return {
             radialGradient: {
@@ -27,14 +27,14 @@ function showGraph(running, walking, eating){
                 viewDistance: 5,
                 fitToPlot: false,
                 frame: {
-                    bottom: { size: 1, color: 'rgba(0,0,0,0.02)' },
+                    bottom: { size: 1, color: 'rgba(0,0,0,0.12)' },
                     back: { size: 1, color: 'rgba(0,0,0,0.04)' },
                     side: { size: 1, color: 'rgba(0,0,0,0.06)' }
                 }
             }
         },
         title: {
-            text: 'Draggable box'
+            text: 'Scatter Plot'
         },
         subtitle: {
             text: 'Click and drag the plot area to rotate in space'
@@ -66,13 +66,13 @@ function showGraph(running, walking, eating){
         },
         series: [{
             name: 'Eating',
-            data: eating
+            data: [[6, 1, 3], [6, 9, 5], [4, 8, 2], [9, 7, 4], [2, 2, 6], [5, 1, 2], [9, 9, 7]]
         }, {
             name: 'Running',
-            data: running
+            data: [[6, 2, 5], [0, 4, 9], [3, 5, 9], [6, 9, 1], [8, 4, 3], [1, 9, 2], [6, 9, 9]]
         },{
             name: 'Walking',
-            data: walking
+            data: [[5, 4, 2], [9, 6, 1], [2, 7, 3], [4, 5, 4], [6, 8, 1], [3, 4, 0], [4, 1, 7]]
         }
         ]
     });
