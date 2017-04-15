@@ -52,6 +52,14 @@
         android:layout_gravity="center"
         android:text="Time and Power Consumption"/>
 
+    <Button
+        android:id="@+id/resetToOriginaldatabaseButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:layout_gravity="center"
+        android:text="Reset to original database"/>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -62,6 +70,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="top"
             android:text="Calibrate"
+            android:layout_above="@+id/textView2"
             android:layout_centerHorizontal="true" />
 
         <TextView

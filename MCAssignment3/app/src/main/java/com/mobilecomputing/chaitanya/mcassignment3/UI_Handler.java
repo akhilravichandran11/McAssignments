@@ -52,6 +52,7 @@ public class UI_Handler extends AppCompatActivity {
     public static final String FILE_PATH = Environment.getExternalStorageDirectory() + File.separator + "Mydata";
     public static final String DATABASE_LOCATION = FILE_PATH + File.separator + DATABASE_NAME;
     long timeUsed, powerUsed;
+    public String[][] walkingArray, runningArray, eatingArray;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +77,7 @@ public class UI_Handler extends AppCompatActivity {
         Button buttonTrain;
         Button timeAndPowerButton;
         Button buttonCalibrate;
+        Button resetToOriginaldatabaseButton;
         final TextView accuracyTextView = (TextView) findViewById(R.id.accuracyTextView);
         ;
 
@@ -110,6 +112,7 @@ public class UI_Handler extends AppCompatActivity {
             }
         });
 
+
         buttonCalibrate = (Button) findViewById(R.id.calibrate);
         buttonCalibrate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -117,6 +120,14 @@ public class UI_Handler extends AppCompatActivity {
                 CalibrateBackButton = true;
                 Intent i = new Intent(UI_Handler.this, Calibration.class);
                 startActivity(i);
+            }
+        });
+
+        resetToOriginaldatabaseButton = (Button) findViewById(R.id.resetToOriginaldatabaseButton);
+        resetToOriginaldatabaseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                copyAssets();
             }
         });
     }
@@ -143,6 +154,10 @@ public class UI_Handler extends AppCompatActivity {
     }
 
     private LinkedList<String> getDataFromDatabase() {
+        walkingArray = new String[50][20];
+        runningArray = new String[50][20];
+        eatingArray = new String[50][20];
+
         db = SQLiteDatabase.openOrCreateDatabase(DATABASE_LOCATION, null);
         db.beginTransaction();
         String query = "SELECT  * FROM training;";
