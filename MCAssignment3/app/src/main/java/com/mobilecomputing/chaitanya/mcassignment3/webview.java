@@ -10,6 +10,7 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -24,12 +25,20 @@ public class webview extends AppCompatActivity {
     public static final String FILE_PATH = Environment.getExternalStorageDirectory() + File.separator + "Mydata";
     public static final String DATABASE_LOCATION = FILE_PATH + File.separator + DATABASE_NAME;
     WebView webview;
+    TextView accuracyTextView2, legendTextView;
+    float ACCURACY;
     public String[][] walkingArray, runningArray, eatingArray;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_webview);
+
+        Bundle bundle = getIntent().getExtras();
+        ACCURACY = bundle.getFloat("ACCURACY");
+
+        accuracyTextView2 = (TextView) findViewById(R.id.accuracyTextView2);
+        accuracyTextView2.setText("ACCURACY = " + ACCURACY + " %");
 
         webview = (WebView) findViewById(R.id.webview);
         final WebSettings webSettings = webview.getSettings();

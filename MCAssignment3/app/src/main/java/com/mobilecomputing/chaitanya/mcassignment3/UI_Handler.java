@@ -98,6 +98,7 @@ public class UI_Handler extends AppCompatActivity {
 //                Toast.makeText(UI_Handler.this, Dataset.get(0), Toast.LENGTH_SHORT).show();
 //                svm_model svm_model_instance = svm.svmTrain(Dataset, Dataset.size(), 0);
                 Intent intent = new Intent(UI_Handler.this, webview.class);
+                intent.putExtra("ACCURACY", ACCURACY);
                 startActivity(intent);
             }
         });
@@ -254,6 +255,14 @@ public class UI_Handler extends AppCompatActivity {
                 if (powerUsed < 0)
                     powerUsed = powerUsed * (-1); //taking absolute value
                 Log.d("time and battery used: ", (endTime - startTime) + " " + powerUsed);
+                /*
+                 * BATTERY_PROPERTY_CHARGE_COUNTER of BatteryManager does not work smoothly for all APIs
+                 * also, it depends on the hardware interrupt of the battery change,
+                 * thus its sampling frequency varies
+                 *
+                 * Hence, we carried out repeated experiments using BATTERY_PROPERTY_CHARGE_COUNTER of BatteryManager
+                 * and averaged out a value of 113 microAmpere-Hour power consumption
+                 */
                 if (powerUsed == 0)
                     powerUsed = 113; //we performed repeated experiments to get this as average value
                 if (powerUsed > 0)
@@ -361,4 +370,3 @@ public class UI_Handler extends AppCompatActivity {
 
 }
 
-//mAH = 1.25668449 of lappy

@@ -53,9 +53,17 @@ public class TimePowerActivity extends AppCompatActivity {
         pointsMobile.setColor(Color.RED);
 
 
-        //graph for server stats:
+        /*
+         * we performed repeated experiments of SVM with k-fold cross validation with k=5 using the same dataset
+         * on our laptop which we assume as fog server
+         * On the laptop as fog server, we get:
+         *      average time used = 328 milliseconds
+         *      average power used = 790 microAmpere-Hour
+         */
         timeUsedServer = 328;
         powerUsedServer = 790;
+
+        //graph for server stats:
         GraphView graphServer = (GraphView) findViewById(R.id.serverGraph);
         PointsGraphSeries<DataPoint> pointsServer = new PointsGraphSeries<>(new DataPoint[] {
                 new DataPoint(timeUsedServer, powerUsedServer)
